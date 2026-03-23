@@ -1,131 +1,88 @@
 /**
  * ═══════════════════════════════════════════════════════
  * STATE.JS — Centralized State Store
- * localStorage-backed, Supabase-ready architecture.
+ * localStorage-backed. Clean default state — no mock data.
  * Currency: Philippine Peso (₱ / PHP)
  * ═══════════════════════════════════════════════════════
  */
 
 const STORAGE_KEY = 'vaultLedgerState';
 
-// ─── Default Mock Data (mirrors future Supabase schema) ───
+// ─── Clean Default State (no mock data) ───
 const DEFAULT_STATE = {
   user: {
-    id: 'usr_001',
-    name: 'Alex Reyes',
-    email: 'alex@vaultledger.ph',
+    id: null,
+    name: '',
     avatar: null,
   },
 
   budget: {
-    monthlyTotal: 45000.00,
-    totalSpent: 29300.00,
-    totalIncome: 42000.00,
-    savingsGoal: 3000.00,
-    pendingBills: 2500.00,
+    monthlyTotal: 0,
+    totalSpent: 0,
+    totalIncome: 0,
+    savingsGoal: 0,
+    pendingBills: 0,
   },
 
   categories: [
     {
-      id: 'cat_dining',
-      name: 'Dining & Social',
+      id: 'cat_food',
+      name: 'Food & Dining',
       icon: 'utensils',
-      budgeted: 5000.00,
-      spent: 4300.00,
-      color: '#ff5252',
+      budgeted: 0,
+      spent: 0,
+      color: '#f472b6',
       parentGroup: 'Monthly Expenses',
     },
     {
       id: 'cat_groceries',
-      name: 'Groceries & Home',
+      name: 'Groceries',
       icon: 'shopping-cart',
-      budgeted: 10000.00,
-      spent: 4700.00,
-      color: '#ffc107',
+      budgeted: 0,
+      spent: 0,
+      color: '#a78bfa',
       parentGroup: 'Monthly Expenses',
     },
     {
-      id: 'cat_utilities',
-      name: 'Monthly Utilities',
+      id: 'cat_bills',
+      name: 'Bills & Utilities',
       icon: 'zap',
-      budgeted: 4000.00,
-      spent: 4000.00,
-      color: '#ff5252',
+      budgeted: 0,
+      spent: 0,
+      color: '#fb923c',
       parentGroup: 'Monthly Expenses',
     },
     {
       id: 'cat_rent',
-      name: 'Rent',
+      name: 'Rent & Housing',
       icon: 'home',
-      budgeted: 15000.00,
-      spent: 13500.00,
-      color: '#00e676',
+      budgeted: 0,
+      spent: 0,
+      color: '#38bdf8',
       parentGroup: 'Monthly Expenses',
     },
     {
-      id: 'cat_entertainment',
-      name: 'Entertainment',
-      icon: 'tv',
-      budgeted: 4000.00,
-      spent: 2800.00,
-      color: '#ffc107',
+      id: 'cat_transport',
+      name: 'Transportation',
+      icon: 'car',
+      budgeted: 0,
+      spent: 0,
+      color: '#34d399',
+      parentGroup: 'Monthly Expenses',
+    },
+    {
+      id: 'cat_shopping',
+      name: 'Shopping',
+      icon: 'shopping-bag',
+      budgeted: 0,
+      spent: 0,
+      color: '#f9a8d4',
       parentGroup: 'Monthly Expenses',
     },
   ],
 
-  transactions: [
-    {
-      id: 'txn_001',
-      description: 'Meralco Electric Bill',
-      subtitle: 'Automated Bill • Today, 3:45 AM',
-      amount: -3250.00,
-      date: '2026-03-24T03:45:00',
-      category: 'cat_utilities',
-      type: 'expense',
-      icon: 'zap',
-    },
-    {
-      id: 'txn_002',
-      description: 'Company Payroll Salary',
-      subtitle: 'Direct Deposit • Yesterday',
-      amount: 42000.00,
-      date: '2026-03-23T09:00:00',
-      category: null,
-      type: 'income',
-      icon: 'building-2',
-    },
-    {
-      id: 'txn_003',
-      description: 'SM Supermarket',
-      subtitle: 'Today, 2:15 PM',
-      amount: -1840.00,
-      date: '2026-03-24T14:15:00',
-      category: 'cat_groceries',
-      type: 'expense',
-      icon: 'shopping-cart',
-    },
-    {
-      id: 'txn_004',
-      description: 'SM Cinema',
-      subtitle: 'Yesterday, 8:15 PM',
-      amount: -380.00,
-      date: '2026-03-23T20:15:00',
-      category: 'cat_entertainment',
-      type: 'expense',
-      icon: 'film',
-    },
-  ],
-
-  notifications: [
-    {
-      id: 'notif_001',
-      type: 'overage',
-      category: 'cat_dining',
-      message: "You've exceeded your Dining monthly budget.",
-      timestamp: '2026-03-24T12:00:00',
-      dismissed: false,
-    },
-  ],
+  transactions: [],
+  notifications: [],
 };
 
 // ─── State Manager ───
@@ -143,11 +100,10 @@ class StateManager {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
-        // Merge with defaults to handle schema additions
         return this._deepMerge(structuredClone(DEFAULT_STATE), parsed);
       }
     } catch (e) {
-      console.warn('[VaultLedger] Corrupted localStorage, resetting to defaults.', e);
+      console.warn('[VaultLedger] Corrupted localStorage, resetting.', e);
       localStorage.removeItem(STORAGE_KEY);
     }
     return structuredClone(DEFAULT_STATE);
@@ -157,7 +113,7 @@ class StateManager {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(this._state));
     } catch (e) {
-      console.error('[VaultLedger] Failed to save state to localStorage.', e);
+      console.error('[VaultLedger] Failed to save state.', e);
     }
   }
 
@@ -181,29 +137,12 @@ class StateManager {
 
   // ─── Getters ───
 
-  get state() {
-    return this._state;
-  }
-
-  get user() {
-    return this._state.user;
-  }
-
-  get budget() {
-    return this._state.budget;
-  }
-
-  get categories() {
-    return this._state.categories;
-  }
-
-  get transactions() {
-    return this._state.transactions;
-  }
-
-  get notifications() {
-    return this._state.notifications;
-  }
+  get state() { return this._state; }
+  get user() { return this._state.user; }
+  get budget() { return this._state.budget; }
+  get categories() { return this._state.categories; }
+  get transactions() { return this._state.transactions; }
+  get notifications() { return this._state.notifications; }
 
   // ─── Computed ───
 
@@ -219,6 +158,10 @@ class StateManager {
     return monthlyTotal > 0 ? Math.round((totalSpent / monthlyTotal) * 100) : 0;
   }
 
+  get totalSpentActual() {
+    return this._state.categories.reduce((sum, c) => sum + c.spent, 0);
+  }
+
   getCategoryStatus(category) {
     const pct = category.budgeted > 0 ? category.spent / category.budgeted : 0;
     if (pct >= 1) return 'danger';
@@ -227,10 +170,41 @@ class StateManager {
   }
 
   get overageCategories() {
-    return this._state.categories.filter(c => c.spent > c.budgeted);
+    return this._state.categories.filter(c => c.spent > c.budgeted && c.budgeted > 0);
+  }
+
+  get hasData() {
+    return this._state.transactions.length > 0;
+  }
+
+  get hasBudget() {
+    return this._state.categories.some(c => c.budgeted > 0);
   }
 
   // ─── Mutations ───
+
+  /**
+   * Complete onboarding — set up user profile and budgets.
+   */
+  completeOnboarding(data) {
+    this._state.user.id = `usr_${Date.now()}`;
+    this._state.user.name = data.name || 'User';
+
+    this._state.budget.totalIncome = data.monthlyIncome || 0;
+    this._state.budget.monthlyTotal = data.monthlyIncome || 0;
+
+    // Apply category budgets from onboarding
+    if (data.categoryBudgets) {
+      for (const [catId, amount] of Object.entries(data.categoryBudgets)) {
+        const cat = this._state.categories.find(c => c.id === catId);
+        if (cat) {
+          cat.budgeted = amount;
+        }
+      }
+    }
+
+    this._notify();
+  }
 
   addTransaction(txn) {
     const newTxn = {
@@ -256,9 +230,7 @@ class StateManager {
       this._state.budget.totalIncome += Math.abs(txn.amount);
     }
 
-    // Check for new overages
     this._checkOverages();
-
     this._notify();
   }
 
@@ -279,7 +251,7 @@ class StateManager {
 
   _checkOverages() {
     for (const cat of this._state.categories) {
-      if (cat.spent > cat.budgeted) {
+      if (cat.spent > cat.budgeted && cat.budgeted > 0) {
         const exists = this._state.notifications.some(
           n => n.type === 'overage' && n.category === cat.id && !n.dismissed
         );
@@ -288,7 +260,7 @@ class StateManager {
             id: `notif_${Date.now()}_${cat.id}`,
             type: 'overage',
             category: cat.id,
-            message: `You've exceeded your ${cat.name} monthly budget.`,
+            message: `You've exceeded your ${cat.name} budget! 💸`,
             timestamp: new Date().toISOString(),
             dismissed: false,
           });
@@ -309,15 +281,12 @@ class StateManager {
   _notify() {
     this._saveState();
     for (const cb of this._subscribers) {
-      try {
-        cb(this._state);
-      } catch (e) {
+      try { cb(this._state); } catch (e) {
         console.error('[VaultLedger] Subscriber error:', e);
       }
     }
   }
 }
 
-// Singleton export
 const appState = new StateManager();
 export default appState;

@@ -1,24 +1,17 @@
 /* ═══════════════════════════════════════════════════════
    VAULT LEDGER — Custom Styles
-   Beyond Tailwind utilities: scrollbars, glows,
-   animations, and component-specific overrides.
+   Feminine dark theme with pink/purple accents.
    ═══════════════════════════════════════════════════════ */
 
-/* ─── Login Page ─── */
+/* ─── Onboarding / Login Page ─── */
 
 .login-fade-in {
   animation: loginFadeIn 0.6s ease-out forwards;
 }
 
 @keyframes loginFadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 .login-exit {
@@ -26,14 +19,8 @@
 }
 
 @keyframes loginFadeOut {
-  from {
-    opacity: 1;
-    transform: scale(1);
-  }
-  to {
-    opacity: 0;
-    transform: scale(1.02);
-  }
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0; transform: scale(1.02); }
 }
 
 .login-card {
@@ -41,47 +28,87 @@
 }
 
 @keyframes loginCardSlide {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .login-icon-glow {
-  box-shadow: 0 0 30px rgba(0, 230, 118, 0.15);
+  box-shadow: 0 0 30px rgba(244, 114, 182, 0.15);
   animation: iconGlow 3s ease-in-out infinite;
 }
 
 @keyframes iconGlow {
-  0%, 100% {
-    box-shadow: 0 0 20px rgba(0, 230, 118, 0.1);
-  }
-  50% {
-    box-shadow: 0 0 40px rgba(0, 230, 118, 0.25);
-  }
+  0%, 100% { box-shadow: 0 0 20px rgba(244, 114, 182, 0.1); }
+  50% { box-shadow: 0 0 40px rgba(244, 114, 182, 0.3); }
 }
 
-.login-spinner {
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  border: 2px solid rgba(10, 15, 13, 0.3);
-  border-top-color: #0a0f0d;
-  border-radius: 50%;
-  animation: spinnerRotate 0.6s linear infinite;
+/* ─── Step Slide ─── */
+
+@keyframes stepSlideIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
-@keyframes spinnerRotate {
-  to {
-    transform: rotate(360deg);
-  }
+/* ─── View Transitions ─── */
+
+@keyframes viewFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Micro-animations ─── */
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.4s cubic-bezier(0.21, 1.02, 0.73, 1) both;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.3s cubic-bezier(0.21, 1.02, 0.73, 1) forwards;
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* ─── Float animation for empty states ─── */
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+/* ─── Pulse glow for interactive elements ─── */
+
+.animate-pulse-glow {
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(244, 114, 182, 0.2); }
+  50% { box-shadow: 0 0 20px 4px rgba(244, 114, 182, 0.15); }
 }
 
 /* ─── Active Nav Item ─── */
+
 .nav-active {
   position: relative;
 }
@@ -93,78 +120,72 @@
   transform: translateY(-50%);
   width: 3px;
   height: 60%;
-  background: #00e676;
+  background: linear-gradient(to bottom, #f472b6, #a78bfa);
   border-radius: 0 4px 4px 0;
 }
 
+/* ─── Nav Item Hover ─── */
+
+.nav-item {
+  position: relative;
+  transition: all 0.2s ease;
+}
+.nav-item:hover {
+  transform: translateX(3px);
+}
+
 /* ─── Sidebar Scrollbar ─── */
-.sidebar-scroll::-webkit-scrollbar {
-  width: 4px;
-}
-.sidebar-scroll::-webkit-scrollbar-track {
-  background: transparent;
-}
+
+.sidebar-scroll::-webkit-scrollbar { width: 4px; }
+.sidebar-scroll::-webkit-scrollbar-track { background: transparent; }
 .sidebar-scroll::-webkit-scrollbar-thumb {
-  background: rgba(0, 230, 118, 0.2);
+  background: rgba(244, 114, 182, 0.2);
   border-radius: 9999px;
 }
 .sidebar-scroll::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 230, 118, 0.4);
+  background: rgba(244, 114, 182, 0.4);
 }
 
-/* ─── Safe-to-Spend Pill Glow ─── */
+/* ─── Safe-to-Spend Pill ─── */
+
 .safe-to-spend-pill {
-  box-shadow:
-    0 0 15px rgba(0, 230, 118, 0.08),
-    inset 0 1px 0 rgba(0, 230, 118, 0.06);
-  transition: box-shadow 0.3s ease;
+  box-shadow: 0 0 15px rgba(244, 114, 182, 0.08), inset 0 1px 0 rgba(244, 114, 182, 0.06);
+  transition: box-shadow 0.3s ease, transform 0.2s ease;
 }
 .safe-to-spend-pill:hover {
-  box-shadow:
-    0 0 25px rgba(0, 230, 118, 0.15),
-    inset 0 1px 0 rgba(0, 230, 118, 0.1);
+  box-shadow: 0 0 25px rgba(244, 114, 182, 0.15), inset 0 1px 0 rgba(244, 114, 182, 0.1);
+  transform: scale(1.02);
 }
 
-/* ─── Category Progress Bar ─── */
+/* ─── Progress Bar ─── */
+
 .progress-bar-track {
   height: 8px;
   border-radius: 9999px;
-  background: rgba(30, 46, 40, 0.8);
+  background: rgba(45, 33, 64, 0.8);
   overflow: hidden;
-  position: relative;
 }
-
 .progress-bar-fill {
   height: 100%;
   border-radius: 9999px;
   transition: width 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   position: relative;
 }
-
 .progress-bar-fill.status-safe {
-  background: linear-gradient(90deg, #00c853, #00e676);
+  background: linear-gradient(90deg, #f472b6, #f9a8d4);
 }
 .progress-bar-fill.status-warning {
-  background: linear-gradient(90deg, #ff8f00, #ffc107);
+  background: linear-gradient(90deg, #f59e0b, #fbbf24);
 }
 .progress-bar-fill.status-danger {
-  background: linear-gradient(90deg, #d50000, #ff5252);
+  background: linear-gradient(90deg, #f43f5e, #fb7185);
 }
 
-/* Shimmer animation on progress bars */
 .progress-bar-fill::after {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.08) 50%,
-    transparent 100%
-  );
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.12) 50%, transparent 100%);
   animation: shimmer 2.5s infinite;
 }
 
@@ -173,7 +194,8 @@
   100% { transform: translateX(100%); }
 }
 
-/* ─── Toast Notification ─── */
+/* ─── Toast ─── */
+
 .toast-enter {
   animation: toastSlideIn 0.35s cubic-bezier(0.21, 1.02, 0.73, 1) forwards;
 }
@@ -182,44 +204,27 @@
 }
 
 @keyframes toastSlideIn {
-  from {
-    opacity: 0;
-    transform: translateX(100%) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0) scale(1);
-  }
+  from { opacity: 0; transform: translateX(100%) scale(0.95); }
+  to { opacity: 1; transform: translateX(0) scale(1); }
 }
-
 @keyframes toastSlideOut {
-  from {
-    opacity: 1;
-    transform: translateX(0) scale(1);
-  }
-  to {
-    opacity: 0;
-    transform: translateX(100%) scale(0.95);
-  }
+  from { opacity: 1; transform: translateX(0) scale(1); }
+  to { opacity: 0; transform: translateX(100%) scale(0.95); }
 }
 
-/* ─── Mobile Alert Banner ─── */
+/* ─── Banner ─── */
+
 .banner-enter {
   animation: bannerFadeIn 0.4s ease-out forwards;
 }
 
 @keyframes bannerFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* ─── FAB Pulse ─── */
+/* ─── FAB ─── */
+
 .fab-pulse {
   position: relative;
 }
@@ -228,23 +233,18 @@
   position: absolute;
   inset: -4px;
   border-radius: 9999px;
-  background: rgba(0, 230, 118, 0.2);
+  background: rgba(244, 114, 182, 0.2);
   animation: fabPulse 2s ease-in-out infinite;
   pointer-events: none;
 }
 
 @keyframes fabPulse {
-  0%, 100% {
-    transform: scale(1);
-    opacity: 0.4;
-  }
-  50% {
-    transform: scale(1.15);
-    opacity: 0;
-  }
+  0%, 100% { transform: scale(1); opacity: 0.4; }
+  50% { transform: scale(1.15); opacity: 0; }
 }
 
-/* ─── Modal Transition ─── */
+/* ─── Modal ─── */
+
 .modal-active {
   opacity: 1 !important;
   pointer-events: auto !important;
@@ -253,77 +253,50 @@
   transform: translateY(0) !important;
 }
 
-/* ─── Navigation Chevron Rotation ─── */
-.nav-chevron-expanded {
-  transform: rotate(0deg) !important;
-}
-
 /* ─── Transaction Row ─── */
+
 .transaction-row {
   display: flex;
   align-items: center;
   gap: 0.75rem;
   padding: 0.875rem 1rem;
   border-radius: 0.75rem;
-  transition: background-color 0.15s ease;
+  transition: all 0.2s ease;
 }
 .transaction-row:hover {
-  background-color: rgba(24, 36, 32, 0.6);
+  background-color: rgba(35, 26, 48, 0.6);
+  transform: translateX(4px);
 }
 
-/* ─── Budget Health Item (Mobile) ─── */
+/* ─── Budget Health Item ─── */
+
 .budget-health-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0.625rem 0;
-  border-bottom: 1px solid rgba(30, 46, 40, 0.5);
+  border-bottom: 1px solid rgba(45, 33, 64, 0.5);
+  transition: all 0.2s ease;
 }
-.budget-health-item:last-child {
-  border-bottom: none;
-}
+.budget-health-item:last-child { border-bottom: none; }
+.budget-health-item:hover { padding-left: 4px; }
 
-/* ─── Recent Activity Item (Mobile) ─── */
+/* ─── Activity Item ─── */
+
 .activity-item {
   display: flex;
   align-items: center;
   gap: 0.75rem;
   padding: 0.5rem 0;
+  transition: all 0.2s ease;
 }
+.activity-item:hover { transform: translateX(3px); }
 
-/* ─── Form Validation Error State ─── */
-.input-error {
-  border-color: #ff5252 !important;
-  box-shadow: 0 0 0 1px rgba(255, 82, 82, 0.3) !important;
-}
+/* ─── Overage Alert ─── */
 
-/* ─── Focus visible ring override for dark bg ─── */
-*:focus-visible {
-  outline: none;
-}
-
-/* ─── Custom select arrow ─── */
-select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238a9a8e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 1rem center;
-  background-size: 12px;
-}
-
-/* ─── Type Toggle Active States ─── */
-.type-toggle[data-active="true"][data-type="expense"] {
-  background: rgba(255, 82, 82, 0.2);
-  color: #ff5252;
-}
-.type-toggle[data-active="true"][data-type="income"] {
-  background: rgba(0, 230, 118, 0.2);
-  color: #00e676;
-}
-
-/* ─── Overage Alert Inline (Transaction Log) ─── */
 .overage-alert-inline {
-  background: rgba(255, 82, 82, 0.08);
-  border: 1px solid rgba(255, 82, 82, 0.2);
+  background: rgba(251, 113, 133, 0.08);
+  border: 1px solid rgba(251, 113, 133, 0.2);
   border-radius: 0.75rem;
   padding: 0.75rem 1rem;
   display: flex;
@@ -331,20 +304,81 @@ select {
   gap: 0.75rem;
 }
 
-/* ─── Smooth scroll behavior ─── */
-html {
-  scroll-behavior: smooth;
+/* ─── Form Errors ─── */
+
+.input-error {
+  border-color: #fb7185 !important;
+  box-shadow: 0 0 0 1px rgba(251, 113, 133, 0.3) !important;
+  animation: inputShake 0.3s ease-in-out;
 }
 
-/* ─── Screen reader only (utility) ─── */
+@keyframes inputShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+/* ─── Focus Ring ─── */
+
+*:focus-visible { outline: none; }
+
+/* ─── Custom Select Arrow ─── */
+
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239886a8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 12px;
+}
+
+/* ─── Type Toggle ─── */
+
+.type-toggle[data-active="true"][data-type="expense"] {
+  background: rgba(251, 113, 133, 0.2);
+  color: #fb7185;
+}
+.type-toggle[data-active="true"][data-type="income"] {
+  background: rgba(52, 211, 153, 0.2);
+  color: #34d399;
+}
+
+/* ─── Smooth scroll ─── */
+
+html { scroll-behavior: smooth; }
+
+/* ─── SR Only ─── */
+
 .sr-only {
   position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
   overflow: hidden;
-  clip: rect(0, 0, 0, 0);
+  clip: rect(0,0,0,0);
   white-space: nowrap;
   border: 0;
+}
+
+/* ─── Card hover lift ─── */
+
+section[aria-label] {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+section[aria-label]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(244, 114, 182, 0.05);
+}
+
+/* ─── Spinner ─── */
+
+.login-spinner {
+  display: inline-block;
+  width: 16px; height: 16px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spinnerRotate 0.6s linear infinite;
+}
+
+@keyframes spinnerRotate {
+  to { transform: rotate(360deg); }
 }

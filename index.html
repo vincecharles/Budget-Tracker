@@ -4,12 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Vault Ledger — Budget Tracker</title>
-  <meta name="description" content="Vault Ledger: A professional budget tracker with real-time spending insights, category health monitoring, and proactive overage alerts." />
+  <meta name="description" content="Vault Ledger: A cute & powerful budget tracker with spending insights and proactive alerts." />
 
-  <!-- Google Fonts: Inter -->
+  <!-- Google Fonts: Outfit (softer, modern) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -18,22 +18,22 @@
       theme: {
         extend: {
           colors: {
-            'vault-bg':      '#0a0f0d',
-            'vault-surface': '#111916',
-            'vault-card':    '#182420',
-            'vault-green':   '#00e676',
-            'vault-yellow':  '#ffc107',
-            'vault-red':     '#ff5252',
-            'vault-text':    '#e0e0e0',
-            'vault-muted':   '#8a9a8e',
-            'vault-border':  '#1e2e28',
+            'vault-bg':      '#110b19',
+            'vault-surface': '#1a1225',
+            'vault-card':    '#231a30',
+            'vault-green':   '#f472b6',
+            'vault-yellow':  '#fbbf24',
+            'vault-red':     '#fb7185',
+            'vault-text':    '#f0e6f6',
+            'vault-muted':   '#9886a8',
+            'vault-border':  '#2d2140',
           },
           fontFamily: {
-            inter: ['Inter', 'system-ui', 'sans-serif'],
+            inter: ['Outfit', 'system-ui', 'sans-serif'],
           },
           boxShadow: {
-            'glow-green': '0 0 20px rgba(0, 230, 118, 0.25)',
-            'glow-green-lg': '0 0 40px rgba(0, 230, 118, 0.15)',
+            'glow-green': '0 0 20px rgba(244, 114, 182, 0.3)',
+            'glow-green-lg': '0 0 40px rgba(244, 114, 182, 0.2)',
           },
         },
       },
@@ -53,124 +53,189 @@
 <body class="bg-vault-bg font-inter text-vault-text antialiased min-h-screen">
 
   <!-- ═══════════════════════════════════════════════════════
-       LOGIN VIEW (shown when not authenticated)
+       ONBOARDING WIZARD (shown on first visit)
        ═══════════════════════════════════════════════════════ -->
   <div id="login-view" class="fixed inset-0 z-[200] bg-vault-bg flex items-center justify-center p-4 login-fade-in">
     <!-- Background glow effects -->
-    <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-vault-green/5 rounded-full blur-[120px] pointer-events-none"></div>
-    <div class="absolute bottom-1/4 right-1/4 w-72 h-72 bg-vault-green/3 rounded-full blur-[100px] pointer-events-none"></div>
+    <div class="absolute top-1/4 left-1/3 w-96 h-96 bg-pink-500/5 rounded-full blur-[120px] pointer-events-none"></div>
+    <div class="absolute bottom-1/3 right-1/4 w-72 h-72 bg-purple-500/5 rounded-full blur-[100px] pointer-events-none"></div>
 
-    <!-- Login Card -->
-    <div class="relative w-full max-w-sm login-card">
-      <!-- Brand Header -->
-      <div class="text-center mb-8">
-        <div class="w-16 h-16 mx-auto rounded-2xl bg-vault-green/10 border border-vault-green/20 flex items-center justify-center mb-4 login-icon-glow">
-          <i data-lucide="shield-check" class="w-8 h-8 text-vault-green"></i>
-        </div>
-        <h1 class="text-2xl font-bold text-vault-text">Vault Ledger</h1>
-        <p class="text-sm text-vault-muted mt-1">Secure financial command center</p>
+    <div class="relative w-full max-w-sm">
+      <!-- Step Indicator Dots -->
+      <div class="flex justify-center gap-2 mb-6">
+        <div data-dot="1" class="w-2.5 h-2.5 rounded-full bg-pink-400 scale-125 transition-all duration-300"></div>
+        <div data-dot="2" class="w-2.5 h-2.5 rounded-full bg-white/20 transition-all duration-300"></div>
+        <div data-dot="3" class="w-2.5 h-2.5 rounded-full bg-white/20 transition-all duration-300"></div>
       </div>
 
-      <!-- Login Form (supports Enter key via native form submit) -->
-      <form id="login-form" novalidate autocomplete="on"
-        class="bg-vault-surface border border-vault-border rounded-2xl p-6 space-y-5">
-
-        <!-- Error Message -->
-        <div id="login-error"
-          class="hidden px-4 py-3 rounded-xl bg-vault-red/10 border border-vault-red/20 text-xs text-vault-red font-medium">
-        </div>
-
-        <!-- Email -->
-        <div>
-          <label for="login-email" class="block text-xs font-medium text-vault-muted mb-1.5">Email Address</label>
-          <div class="relative">
-            <i data-lucide="mail" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-vault-muted pointer-events-none"></i>
-            <input
-              type="email"
-              id="login-email"
-              name="email"
-              placeholder="alex@vaultledger.ph"
-              autocomplete="email"
-              required
-              class="w-full pl-10 pr-4 py-3 bg-vault-card border border-vault-border rounded-xl text-sm text-vault-text placeholder-vault-muted/50 focus:outline-none focus:border-vault-green focus:ring-1 focus:ring-vault-green/30 transition-colors"
-            />
+      <!-- ─── STEP 1: Welcome ─── -->
+      <div data-step="1" class="login-card">
+        <div class="text-center mb-8">
+          <div class="w-16 h-16 mx-auto rounded-2xl bg-pink-500/15 border border-pink-500/20 flex items-center justify-center mb-4 login-icon-glow">
+            <i data-lucide="heart" class="w-8 h-8 text-pink-400"></i>
           </div>
+          <h1 class="text-2xl font-bold text-vault-text">Welcome to Vault Ledger ✨</h1>
+          <p class="text-sm text-vault-muted mt-1">Let's set up your budget in 3 easy steps</p>
         </div>
 
-        <!-- Password -->
-        <div>
-          <label for="login-password" class="block text-xs font-medium text-vault-muted mb-1.5">Password</label>
-          <div class="relative">
-            <i data-lucide="lock" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-vault-muted pointer-events-none"></i>
-            <input
-              type="password"
-              id="login-password"
-              name="password"
-              placeholder="••••••••"
-              autocomplete="current-password"
-              required
-              class="w-full pl-10 pr-12 py-3 bg-vault-card border border-vault-border rounded-xl text-sm text-vault-text placeholder-vault-muted/50 focus:outline-none focus:border-vault-green focus:ring-1 focus:ring-vault-green/30 transition-colors"
-            />
-            <button
-              type="button"
-              id="password-toggle"
-              class="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-vault-muted hover:text-vault-green transition-colors"
-              aria-label="Toggle password visibility"
-            >
-              <i data-lucide="eye" class="w-4 h-4"></i>
+        <div class="bg-vault-surface border border-vault-border rounded-2xl p-6 space-y-5">
+          <div>
+            <label for="onboard-name" class="block text-xs font-medium text-vault-muted mb-1.5">What's your name? 💕</label>
+            <div class="relative">
+              <i data-lucide="user" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-vault-muted pointer-events-none"></i>
+              <input
+                type="text"
+                id="onboard-name"
+                placeholder="e.g. Erika"
+                autocomplete="name"
+                class="w-full pl-10 pr-4 py-3 bg-vault-card border border-vault-border rounded-xl text-sm text-vault-text placeholder-vault-muted/50 focus:outline-none focus:border-pink-400 focus:ring-1 focus:ring-pink-400/30 transition-colors"
+              />
+            </div>
+          </div>
+
+          <button
+            type="button"
+            id="step1-next"
+            class="w-full py-3.5 bg-gradient-to-r from-pink-500 to-purple-500 text-white font-bold text-sm rounded-xl hover:from-pink-400 hover:to-purple-400 active:scale-[0.98] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 flex items-center justify-center gap-2"
+          >
+            <span>Continue</span>
+            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- ─── STEP 2: Monthly Income ─── -->
+      <div data-step="2" class="hidden login-card">
+        <div class="text-center mb-8">
+          <div class="w-16 h-16 mx-auto rounded-2xl bg-purple-500/15 border border-purple-500/20 flex items-center justify-center mb-4 login-icon-glow">
+            <i data-lucide="wallet" class="w-8 h-8 text-purple-400"></i>
+          </div>
+          <h1 class="text-2xl font-bold text-vault-text">Monthly Income 💰</h1>
+          <p class="text-sm text-vault-muted mt-1">How much do you earn each month?</p>
+        </div>
+
+        <div class="bg-vault-surface border border-vault-border rounded-2xl p-6 space-y-5">
+          <div>
+            <label for="onboard-income" class="block text-xs font-medium text-vault-muted mb-1.5">Monthly Income (₱)</label>
+            <div class="relative">
+              <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-pink-400 font-bold pointer-events-none">₱</span>
+              <input
+                type="number"
+                id="onboard-income"
+                placeholder="25,000"
+                min="0"
+                step="100"
+                class="w-full pl-10 pr-4 py-3 bg-vault-card border border-vault-border rounded-xl text-sm text-vault-text placeholder-vault-muted/50 focus:outline-none focus:border-pink-400 focus:ring-1 focus:ring-pink-400/30 transition-colors"
+              />
+            </div>
+          </div>
+
+          <div class="flex gap-3">
+            <button type="button" id="step2-back" class="flex-1 py-3 border border-vault-border text-vault-muted font-medium text-sm rounded-xl hover:bg-vault-card transition-colors">
+              Back
+            </button>
+            <button type="button" id="step2-next" class="flex-1 py-3 bg-gradient-to-r from-pink-500 to-purple-500 text-white font-bold text-sm rounded-xl hover:from-pink-400 hover:to-purple-400 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+              <span>Continue</span>
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>
             </button>
           </div>
         </div>
+      </div>
 
-        <!-- Sign In Button -->
-        <button
-          type="submit"
-          id="login-btn"
-          class="w-full py-3.5 bg-vault-green text-vault-bg font-bold text-sm rounded-xl hover:bg-vault-green/90 active:scale-[0.98] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-vault-green focus-visible:ring-offset-2 focus-visible:ring-offset-vault-surface flex items-center justify-center gap-2"
-        >
-          <i data-lucide="log-in" class="w-4 h-4"></i>
-          <span>Sign In</span>
-        </button>
-      </form>
+      <!-- ─── STEP 3: Budget Categories ─── -->
+      <div data-step="3" class="hidden login-card">
+        <div class="text-center mb-6">
+          <div class="w-16 h-16 mx-auto rounded-2xl bg-pink-500/15 border border-pink-500/20 flex items-center justify-center mb-4 login-icon-glow">
+            <i data-lucide="sparkles" class="w-8 h-8 text-pink-400"></i>
+          </div>
+          <h1 class="text-xl font-bold text-vault-text">Set Your Budgets 🎀</h1>
+          <p class="text-xs text-vault-muted mt-1">We've suggested amounts — adjust as you like!</p>
+        </div>
+
+        <div class="bg-vault-surface border border-vault-border rounded-2xl p-5 space-y-3 max-h-[45vh] overflow-y-auto sidebar-scroll">
+          <!-- Category budget inputs -->
+          <div class="flex items-center justify-between gap-3">
+            <label class="text-xs text-vault-text min-w-[100px]">🍽️ Food & Dining</label>
+            <div class="relative flex-1">
+              <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-pink-400 font-bold">₱</span>
+              <input type="number" id="budget-cat_food" placeholder="0" min="0" class="w-full pl-7 pr-2 py-2 bg-vault-card border border-vault-border rounded-lg text-xs text-vault-text focus:outline-none focus:border-pink-400 transition-colors" />
+            </div>
+          </div>
+          <div class="flex items-center justify-between gap-3">
+            <label class="text-xs text-vault-text min-w-[100px]">🛒 Groceries</label>
+            <div class="relative flex-1">
+              <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-pink-400 font-bold">₱</span>
+              <input type="number" id="budget-cat_groceries" placeholder="0" min="0" class="w-full pl-7 pr-2 py-2 bg-vault-card border border-vault-border rounded-lg text-xs text-vault-text focus:outline-none focus:border-pink-400 transition-colors" />
+            </div>
+          </div>
+          <div class="flex items-center justify-between gap-3">
+            <label class="text-xs text-vault-text min-w-[100px]">⚡ Bills & Utilities</label>
+            <div class="relative flex-1">
+              <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-pink-400 font-bold">₱</span>
+              <input type="number" id="budget-cat_bills" placeholder="0" min="0" class="w-full pl-7 pr-2 py-2 bg-vault-card border border-vault-border rounded-lg text-xs text-vault-text focus:outline-none focus:border-pink-400 transition-colors" />
+            </div>
+          </div>
+          <div class="flex items-center justify-between gap-3">
+            <label class="text-xs text-vault-text min-w-[100px]">🏠 Rent & Housing</label>
+            <div class="relative flex-1">
+              <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-pink-400 font-bold">₱</span>
+              <input type="number" id="budget-cat_rent" placeholder="0" min="0" class="w-full pl-7 pr-2 py-2 bg-vault-card border border-vault-border rounded-lg text-xs text-vault-text focus:outline-none focus:border-pink-400 transition-colors" />
+            </div>
+          </div>
+          <div class="flex items-center justify-between gap-3">
+            <label class="text-xs text-vault-text min-w-[100px]">🚗 Transportation</label>
+            <div class="relative flex-1">
+              <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-pink-400 font-bold">₱</span>
+              <input type="number" id="budget-cat_transport" placeholder="0" min="0" class="w-full pl-7 pr-2 py-2 bg-vault-card border border-vault-border rounded-lg text-xs text-vault-text focus:outline-none focus:border-pink-400 transition-colors" />
+            </div>
+          </div>
+          <div class="flex items-center justify-between gap-3">
+            <label class="text-xs text-vault-text min-w-[100px]">🛍️ Shopping</label>
+            <div class="relative flex-1">
+              <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-pink-400 font-bold">₱</span>
+              <input type="number" id="budget-cat_shopping" placeholder="0" min="0" class="w-full pl-7 pr-2 py-2 bg-vault-card border border-vault-border rounded-lg text-xs text-vault-text focus:outline-none focus:border-pink-400 transition-colors" />
+            </div>
+          </div>
+        </div>
+
+        <div class="flex gap-3 mt-4">
+          <button type="button" id="step3-back" class="flex-1 py-3 border border-vault-border text-vault-muted font-medium text-sm rounded-xl hover:bg-vault-card transition-colors">
+            Back
+          </button>
+          <button type="button" id="step3-done" class="flex-1 py-3 bg-gradient-to-r from-pink-500 to-purple-500 text-white font-bold text-sm rounded-xl hover:from-pink-400 hover:to-purple-400 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+            <i data-lucide="sparkles" class="w-4 h-4"></i>
+            <span>Let's Go!</span>
+          </button>
+        </div>
+      </div>
 
       <!-- Footer -->
-      <p class="text-center text-[10px] text-vault-muted/50 mt-6 uppercase tracking-widest">
-        End-to-end encrypted • AES-256
+      <p class="text-center text-[10px] text-vault-muted/40 mt-6 uppercase tracking-widest">
+        Your data stays on this device 💕
       </p>
     </div>
   </div>
 
   <!-- ═══════════════════════════════════════════════════════
-       APP LAYOUT (hidden until authenticated)
+       APP LAYOUT (hidden until onboarded)
        ═══════════════════════════════════════════════════════ -->
   <div id="app-layout" class="hidden">
 
   <!-- ═══════════════════════════════════════════════════════
-       MOBILE TOP BAR (< md)
+       MOBILE TOP BAR
        ═══════════════════════════════════════════════════════ -->
   <header class="md:hidden fixed top-0 left-0 right-0 z-40 bg-vault-surface/95 backdrop-blur-md border-b border-vault-border" role="banner">
     <div class="flex items-center justify-between px-4 h-14">
-      <!-- Hamburger -->
-      <button
-        id="hamburger-btn"
-        type="button"
-        aria-label="Open menu"
-        aria-expanded="false"
-        aria-controls="mobile-drawer"
-        class="p-2 -ml-2 rounded-lg text-vault-muted hover:text-vault-green hover:bg-vault-card transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-vault-green"
-      >
+      <button id="hamburger-btn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-drawer"
+        class="p-2 -ml-2 rounded-lg text-vault-muted hover:text-pink-400 hover:bg-vault-card transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-400">
         <i data-lucide="menu" class="w-5 h-5"></i>
       </button>
-
-      <!-- Brand -->
       <div class="flex items-center gap-2">
-        <i data-lucide="shield-check" class="w-5 h-5 text-vault-green"></i>
+        <i data-lucide="heart" class="w-5 h-5 text-pink-400"></i>
         <span class="font-semibold text-sm">Vault Ledger</span>
       </div>
-
-      <!-- Balance pill -->
       <div class="flex items-center gap-2">
-        <span class="text-xs font-semibold text-vault-green">₱7,200 left</span>
+        <span id="topbar-balance" class="text-xs font-semibold text-pink-400">₱0 left</span>
         <div class="w-7 h-7 rounded-full bg-vault-card flex items-center justify-center">
           <i data-lucide="user" class="w-4 h-4 text-vault-muted"></i>
         </div>
@@ -178,198 +243,130 @@
     </div>
   </header>
 
-  <!-- ═══════════════════════════════════════════════════════
-       MOBILE DRAWER OVERLAY
-       ═══════════════════════════════════════════════════════ -->
-  <div
-    id="mobile-backdrop"
-    class="md:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40 opacity-0 pointer-events-none transition-opacity duration-300"
-    aria-hidden="true"
-  ></div>
+  <!-- MOBILE DRAWER OVERLAY -->
+  <div id="mobile-backdrop" class="md:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40 opacity-0 pointer-events-none transition-opacity duration-300" aria-hidden="true"></div>
 
   <!-- ═══════════════════════════════════════════════════════
-       SIDEBAR / MOBILE DRAWER
+       SIDEBAR
        ═══════════════════════════════════════════════════════ -->
-  <aside
-    id="mobile-drawer"
-    role="navigation"
-    aria-label="Main navigation"
-    class="
-      fixed top-0 left-0 h-full z-50
-      w-72 bg-vault-surface border-r border-vault-border
-      flex flex-col
-      transition-transform duration-300 ease-in-out
-      md:translate-x-0
-      -translate-x-full
-    "
-  >
+  <aside id="mobile-drawer" role="navigation" aria-label="Main navigation"
+    class="fixed top-0 left-0 h-full z-50 w-72 bg-vault-surface border-r border-vault-border flex flex-col transition-transform duration-300 ease-in-out md:translate-x-0 -translate-x-full">
     <!-- Sidebar Header -->
     <div class="p-5 border-b border-vault-border">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2.5">
-          <div class="w-8 h-8 rounded-lg bg-vault-green/15 flex items-center justify-center">
-            <i data-lucide="shield-check" class="w-5 h-5 text-vault-green"></i>
+          <div class="w-8 h-8 rounded-lg bg-pink-500/15 flex items-center justify-center">
+            <i data-lucide="heart" class="w-5 h-5 text-pink-400"></i>
           </div>
-          <h1 class="text-lg font-bold text-vault-text">Sentinel Vault</h1>
+          <h1 class="text-lg font-bold text-vault-text">Vault Ledger</h1>
         </div>
-        <!-- Close button: mobile only -->
-        <button
-          id="drawer-close-btn"
-          type="button"
-          aria-label="Close menu"
-          class="md:hidden p-1.5 rounded-lg text-vault-muted hover:text-vault-red hover:bg-vault-card transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-vault-green"
-        >
+        <button id="drawer-close-btn" type="button" aria-label="Close menu"
+          class="md:hidden p-1.5 rounded-lg text-vault-muted hover:text-rose-400 hover:bg-vault-card transition-colors">
           <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
 
       <!-- Safe to Spend Pill -->
-      <div class="mt-4 safe-to-spend-pill flex items-center gap-2 px-3 py-2 rounded-xl bg-vault-green/10 border border-vault-green/20">
-        <i data-lucide="wallet" class="w-4 h-4 text-vault-green"></i>
-        <span class="text-sm font-medium text-vault-green" id="sidebar-safe-to-spend">Safe to Spend: $1,240</span>
+      <div class="mt-4 safe-to-spend-pill flex items-center gap-2 px-3 py-2 rounded-xl bg-pink-500/10 border border-pink-500/20">
+        <i data-lucide="wallet" class="w-4 h-4 text-pink-400"></i>
+        <span class="text-sm font-medium text-pink-400" id="sidebar-safe-to-spend">Safe to Spend: ₱0</span>
       </div>
     </div>
 
-    <!-- Navigation Tree -->
-    <nav class="flex-1 overflow-y-auto sidebar-scroll p-3 space-y-1" role="tree" aria-label="Financial categories">
-
-      <!-- Financial Overview Label -->
+    <!-- Navigation -->
+    <nav class="flex-1 overflow-y-auto sidebar-scroll p-3 space-y-1" role="tree" aria-label="Navigation">
       <div class="px-3 pt-3 pb-2">
-        <span class="text-[10px] font-semibold uppercase tracking-widest text-vault-muted">Financial Overview</span>
+        <span class="text-[10px] font-semibold uppercase tracking-widest text-vault-muted">Overview ✨</span>
       </div>
 
-      <!-- Level 1: Dashboard -->
-      <a
-        href="#/dashboard"
-        data-route="dashboard"
-        class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-vault-text hover:bg-vault-card transition-colors group focus:outline-none focus-visible:ring-2 focus-visible:ring-vault-green"
-      >
-        <i data-lucide="layout-dashboard" class="w-4 h-4 text-vault-muted group-hover:text-vault-green transition-colors"></i>
+      <a href="#/dashboard" data-route="dashboard" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-vault-text hover:bg-vault-card transition-colors group">
+        <i data-lucide="layout-dashboard" class="w-4 h-4 text-vault-muted group-hover:text-pink-400 transition-colors"></i>
         <span class="flex-1 text-left">Dashboard</span>
       </a>
 
-      <!-- Level 1: Monthly Expenses -->
-      <a
-        href="#/expenses"
-        data-route="expenses"
-        class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-vault-text hover:bg-vault-card transition-colors group focus:outline-none focus-visible:ring-2 focus-visible:ring-vault-green"
-      >
-        <i data-lucide="bar-chart-3" class="w-4 h-4 text-vault-muted group-hover:text-vault-green transition-colors"></i>
+      <a href="#/expenses" data-route="expenses" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-vault-text hover:bg-vault-card transition-colors group">
+        <i data-lucide="bar-chart-3" class="w-4 h-4 text-vault-muted group-hover:text-pink-400 transition-colors"></i>
         <span class="flex-1 text-left">Monthly Expenses</span>
       </a>
 
-      <!-- Level 1: Investments -->
-      <a
-        href="#/investments"
-        data-route="investments"
-        class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-vault-text hover:bg-vault-card transition-colors group focus:outline-none focus-visible:ring-2 focus-visible:ring-vault-green"
-      >
-        <i data-lucide="trending-up" class="w-4 h-4 text-vault-muted group-hover:text-vault-green transition-colors"></i>
+      <a href="#/investments" data-route="investments" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-vault-text hover:bg-vault-card transition-colors group">
+        <i data-lucide="trending-up" class="w-4 h-4 text-vault-muted group-hover:text-pink-400 transition-colors"></i>
         <span class="flex-1 text-left">Investments</span>
       </a>
 
-      <!-- Level 1: Transactions -->
-      <a
-        href="#/transactions"
-        data-route="transactions"
-        class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-vault-text hover:bg-vault-card transition-colors group focus:outline-none focus-visible:ring-2 focus-visible:ring-vault-green"
-      >
-        <i data-lucide="arrow-left-right" class="w-4 h-4 text-vault-muted group-hover:text-vault-green transition-colors"></i>
+      <a href="#/transactions" data-route="transactions" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-vault-text hover:bg-vault-card transition-colors group">
+        <i data-lucide="arrow-left-right" class="w-4 h-4 text-vault-muted group-hover:text-pink-400 transition-colors"></i>
         <span class="flex-1 text-left">Transactions</span>
       </a>
 
-      <!-- Divider -->
       <div class="border-t border-vault-border my-3" role="separator"></div>
 
-      <!-- Security Settings -->
-      <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-vault-muted hover:text-vault-text hover:bg-vault-card transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-vault-green">
+      <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-vault-muted hover:text-vault-text hover:bg-vault-card transition-colors">
         <i data-lucide="settings" class="w-4 h-4"></i>
-        <span>Security Settings</span>
+        <span>Settings</span>
       </a>
 
-      <!-- Help Center -->
-      <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-vault-muted hover:text-vault-text hover:bg-vault-card transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-vault-green">
-        <i data-lucide="help-circle" class="w-4 h-4"></i>
-        <span>Help Center</span>
-      </a>
-
-      <!-- Logout -->
-      <a href="#" id="logout-btn" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-vault-muted hover:text-vault-red hover:bg-vault-card transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-vault-green">
+      <a href="#" id="logout-btn" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-vault-muted hover:text-rose-400 hover:bg-vault-card transition-colors">
         <i data-lucide="log-out" class="w-4 h-4"></i>
-        <span>Sign Out</span>
+        <span>Reset & Sign Out</span>
       </a>
     </nav>
 
     <!-- Quick Transaction CTA -->
     <div class="p-4 border-t border-vault-border">
-      <button
-        id="sidebar-quick-transaction-btn"
-        type="button"
-        class="w-full py-3 px-4 bg-vault-green text-vault-bg font-semibold text-sm rounded-xl hover:bg-vault-green/90 active:scale-[0.98] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-vault-green focus-visible:ring-offset-2 focus-visible:ring-offset-vault-surface"
-      >
-        Quick Transaction
+      <button id="sidebar-quick-transaction-btn" type="button"
+        class="w-full py-3 px-4 bg-gradient-to-r from-pink-500 to-purple-500 text-white font-semibold text-sm rounded-xl hover:from-pink-400 hover:to-purple-400 active:scale-[0.98] transition-all">
+        ✨ Quick Transaction
       </button>
     </div>
   </aside>
 
   <!-- ═══════════════════════════════════════════════════════
-       MAIN CONTENT AREA
+       MAIN CONTENT
        ═══════════════════════════════════════════════════════ -->
   <main class="md:ml-72 pt-14 md:pt-0 min-h-screen" role="main">
 
     <!-- ═══════ DASHBOARD VIEW ═══════ -->
     <div data-view="dashboard">
 
-    <!-- ─── Desktop: Top area spacer ─── -->
     <div class="hidden md:block h-4"></div>
 
-    <!-- ═══════════════════════════════════════════════════════
-         MOBILE: OVERSPEND ALERT BANNER
-         ═══════════════════════════════════════════════════════ -->
-    <div
-      id="mobile-alert-banner"
-      role="alert"
-      aria-live="assertive"
-      class="md:hidden mx-4 mt-3 px-4 py-3 rounded-xl bg-vault-red/15 border border-vault-red/30 flex items-center gap-3"
-    >
-      <i data-lucide="alert-triangle" class="w-5 h-5 text-vault-red shrink-0"></i>
+    <!-- MOBILE: OVERSPEND ALERT BANNER (hidden by default) -->
+    <div id="mobile-alert-banner" role="alert" aria-live="assertive"
+      class="hidden md:hidden mx-4 mt-3 px-4 py-3 rounded-xl bg-rose-500/15 border border-rose-500/30 flex items-center gap-3">
+      <i data-lucide="alert-triangle" class="w-5 h-5 text-rose-400 shrink-0"></i>
       <div class="flex-1 min-w-0">
-        <p class="text-xs font-bold text-vault-red uppercase tracking-wide">Overspend Alert</p>
-        <p class="text-xs text-vault-muted mt-0.5 truncate">You've exceeded your Dining monthly budget.</p>
+        <p class="text-xs font-bold text-rose-400 uppercase tracking-wide">Budget Alert 💸</p>
+        <p class="text-xs text-vault-muted mt-0.5 truncate"></p>
       </div>
-      <button type="button" class="shrink-0 p-1 text-vault-muted hover:text-vault-red transition-colors" aria-label="Dismiss alert">
+      <button type="button" class="shrink-0 p-1 text-vault-muted hover:text-rose-400 transition-colors" aria-label="Dismiss">
         <i data-lucide="x" class="w-4 h-4"></i>
       </button>
     </div>
 
-    <!-- ═══════════════════════════════════════════════════════
-         HERO: AVAILABLE LIQUIDITY / SAFE TO SPEND
-         ═══════════════════════════════════════════════════════ -->
+    <!-- HERO: SAFE TO SPEND -->
     <section class="p-4 md:p-6" aria-label="Financial overview">
       <!-- Desktop Hero -->
       <div class="hidden md:block">
         <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-vault-card via-vault-surface to-vault-card border border-vault-border p-8">
-          <!-- Glow accents -->
-          <div class="absolute -top-20 -right-20 w-60 h-60 bg-vault-green/5 rounded-full blur-3xl"></div>
-          <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-vault-green/3 rounded-full blur-2xl"></div>
+          <div class="absolute -top-20 -right-20 w-60 h-60 bg-pink-500/5 rounded-full blur-3xl"></div>
+          <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-purple-500/5 rounded-full blur-2xl"></div>
 
           <div class="relative flex items-center justify-between">
             <div class="space-y-3">
-              <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-vault-muted">Available Liquidity</p>
+              <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-vault-muted">Available to Spend ✨</p>
               <h2 class="text-5xl md:text-6xl font-extrabold text-vault-text tracking-tight" id="hero-amount">
-                ₱7,200<span class="text-vault-muted">.00</span>
+                ₱0<span class="text-vault-muted">.00</span>
               </h2>
-              <p class="text-sm text-vault-muted max-w-md leading-relaxed">
-                Your projected surplus for today, calculated after pending bills and savings goals.
+              <p id="user-greeting" class="text-sm text-vault-muted max-w-md leading-relaxed">
+                Welcome! Set up your budget to get started 💕
               </p>
             </div>
-
-            <!-- Chart.js Doughnut -->
             <div class="relative w-36 h-36 md:w-44 md:h-44">
               <canvas id="spending-chart" aria-hidden="true"></canvas>
-              <span class="sr-only" id="chart-sr-text">75% of monthly budget spent. ₱7,200 safe to spend today.</span>
+              <span class="sr-only" id="chart-sr-text">Budget chart</span>
               <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                <span class="text-3xl font-bold text-vault-green" id="chart-center-pct">75%</span>
+                <span class="text-3xl font-bold text-pink-400" id="chart-center-pct">0%</span>
                 <span class="text-[10px] text-vault-muted uppercase tracking-wider">Spent</span>
               </div>
             </div>
@@ -380,14 +377,14 @@
       <!-- Mobile Hero -->
       <div class="md:hidden">
         <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-vault-card via-vault-surface to-vault-card border border-vault-border p-5">
-          <div class="absolute -top-10 -right-10 w-32 h-32 bg-vault-green/5 rounded-full blur-2xl"></div>
+          <div class="absolute -top-10 -right-10 w-32 h-32 bg-pink-500/5 rounded-full blur-2xl"></div>
           <div class="relative">
-            <p class="text-[9px] font-bold uppercase tracking-[0.2em] text-vault-muted">Safe to Spend Today</p>
+            <p class="text-[9px] font-bold uppercase tracking-[0.2em] text-vault-muted">Safe to Spend Today ✨</p>
             <div class="flex items-end justify-between mt-2">
-              <h2 class="text-4xl font-extrabold text-vault-green" id="mobile-hero-amount">₱7,200</h2>
-              <span class="text-xs text-vault-muted font-medium px-2 py-1 rounded-md bg-vault-green/10 border border-vault-green/20">
-                <i data-lucide="shield-check" class="w-3 h-3 inline -mt-0.5 text-vault-green"></i>
-                Vault Secured
+              <h2 class="text-4xl font-extrabold text-pink-400" id="mobile-hero-amount">₱0</h2>
+              <span class="text-xs text-vault-muted font-medium px-2 py-1 rounded-md bg-pink-500/10 border border-pink-500/20">
+                <i data-lucide="heart" class="w-3 h-3 inline -mt-0.5 text-pink-400"></i>
+                Secured
               </span>
             </div>
           </div>
@@ -395,333 +392,180 @@
       </div>
     </section>
 
-    <!-- ═══════════════════════════════════════════════════════
-         CONTENT GRID
-         ═══════════════════════════════════════════════════════ -->
+    <!-- CONTENT GRID -->
     <div class="px-4 md:px-6 pb-24 md:pb-6 space-y-5 md:space-y-0 md:grid md:grid-cols-3 md:gap-5">
 
-      <!-- ─── DESKTOP: Category Health (spans 1 col) ─── -->
+      <!-- Category Health -->
       <div class="md:col-span-1 space-y-5">
-        <!-- Category Health Card -->
         <section class="bg-vault-surface rounded-2xl border border-vault-border p-5" aria-label="Category Health">
           <div class="flex items-center justify-between mb-5">
-            <h3 class="text-sm font-semibold text-vault-text">Category Health</h3>
-            <button type="button" class="p-1 text-vault-muted hover:text-vault-text transition-colors" aria-label="Category options">
+            <h3 class="text-sm font-semibold text-vault-text">Category Health 🎀</h3>
+            <button type="button" class="p-1 text-vault-muted hover:text-vault-text transition-colors" aria-label="More">
               <i data-lucide="more-horizontal" class="w-4 h-4"></i>
             </button>
           </div>
-
           <div id="category-health-bars" class="space-y-5">
-            <!-- Progress bars rendered by JS -->
+            <!-- Rendered by JS -->
           </div>
         </section>
 
         <!-- Security Card (Desktop) -->
-        <section class="hidden md:block bg-vault-surface rounded-2xl border border-vault-border p-5" aria-label="Security status">
+        <section class="hidden md:block bg-vault-surface rounded-2xl border border-vault-border p-5" aria-label="Security">
           <div class="flex items-start gap-3 mb-4">
-            <div class="w-10 h-10 rounded-xl bg-vault-green/10 flex items-center justify-center shrink-0">
-              <i data-lucide="shield-check" class="w-5 h-5 text-vault-green"></i>
+            <div class="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center shrink-0">
+              <i data-lucide="shield-check" class="w-5 h-5 text-purple-400"></i>
             </div>
             <div>
-              <h3 class="text-sm font-semibold text-vault-text">Your Digital Vault is Secure</h3>
-              <p class="text-xs text-vault-muted mt-1 leading-relaxed">256-bit encryption active. All syncs compatible with major banking protocols.</p>
+              <h3 class="text-sm font-semibold text-vault-text">Your Data is Private 💜</h3>
+              <p class="text-xs text-vault-muted mt-1 leading-relaxed">All data stored locally on your device. Nothing leaves your browser.</p>
             </div>
-          </div>
-          <div class="flex items-center gap-2 text-xs text-vault-muted">
-            <i data-lucide="smartphone" class="w-3.5 h-3.5"></i>
-            <span>Apple Store</span>
           </div>
         </section>
       </div>
 
-      <!-- ─── Vault Log / Transaction History (spans 2 cols on desktop) ─── -->
+      <!-- Vault Log -->
       <section class="md:col-span-2 bg-vault-surface rounded-2xl border border-vault-border p-5" aria-label="Transaction log">
         <div class="flex items-center justify-between mb-5">
-          <h3 class="text-sm font-semibold text-vault-text">Vault Log</h3>
-          <a href="#" class="text-xs font-semibold text-vault-green hover:underline">View Archive</a>
+          <h3 class="text-sm font-semibold text-vault-text">Vault Log 📝</h3>
+          <a href="#/transactions" class="text-xs font-semibold text-pink-400 hover:underline">View All</a>
         </div>
-
         <div id="transaction-log" class="space-y-1">
-          <!-- Transactions rendered by JS -->
+          <!-- Rendered by JS -->
         </div>
       </section>
 
-      <!-- ─── MOBILE-ONLY: Budget Health ─── -->
-      <section class="md:hidden bg-vault-surface rounded-2xl border border-vault-border p-5" aria-label="Budget health summary">
+      <!-- MOBILE: Budget Health -->
+      <section class="md:hidden bg-vault-surface rounded-2xl border border-vault-border p-5" aria-label="Budget health">
         <div class="flex items-center justify-between mb-4">
-          <h3 class="text-sm font-semibold text-vault-text">Budget Health</h3>
-          <a href="#" class="text-xs font-semibold text-vault-green hover:underline">View All</a>
+          <h3 class="text-sm font-semibold text-vault-text">Budget Health 🎀</h3>
+          <a href="#/expenses" class="text-xs font-semibold text-pink-400 hover:underline">View All</a>
         </div>
-        <div id="mobile-budget-health" class="space-y-3">
-          <!-- Rendered by JS -->
-        </div>
+        <div id="mobile-budget-health" class="space-y-3"></div>
       </section>
 
-      <!-- ─── MOBILE-ONLY: Recent Activity ─── -->
+      <!-- MOBILE: Recent Activity -->
       <section class="md:hidden bg-vault-surface rounded-2xl border border-vault-border p-5" aria-label="Recent activity">
-        <h3 class="text-sm font-semibold text-vault-text mb-4">Recent Activity</h3>
-        <div id="recent-activity-list" class="space-y-3">
-          <!-- Rendered by JS -->
-        </div>
+        <h3 class="text-sm font-semibold text-vault-text mb-4">Recent Activity ✨</h3>
+        <div id="recent-activity-list" class="space-y-3"></div>
       </section>
     </div>
     </div><!-- /data-view="dashboard" -->
 
-    <!-- ═══════════════════════════════════════════════════════
-         MONTHLY EXPENSES VIEW (scaffold)
-         ═══════════════════════════════════════════════════════ -->
+    <!-- ═══════ MONTHLY EXPENSES VIEW ═══════ -->
     <div data-view="expenses" class="hidden">
       <div class="p-4 md:p-6 space-y-5">
-        <!-- Page Header -->
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-vault-green/10 flex items-center justify-center">
-            <i data-lucide="bar-chart-3" class="w-5 h-5 text-vault-green"></i>
+          <div class="w-10 h-10 rounded-xl bg-pink-500/10 flex items-center justify-center">
+            <i data-lucide="bar-chart-3" class="w-5 h-5 text-pink-400"></i>
           </div>
           <div>
-            <h2 class="text-xl font-bold text-vault-text">Monthly Expenses</h2>
-            <p class="text-xs text-vault-muted">Track and manage your monthly spending</p>
+            <h2 class="text-xl font-bold text-vault-text">Monthly Expenses 📊</h2>
+            <p class="text-xs text-vault-muted">Track your monthly spending</p>
           </div>
         </div>
-
-        <!-- Summary Cards -->
-        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-          <div class="bg-vault-surface rounded-2xl border border-vault-border p-5">
-            <p class="text-[10px] font-bold uppercase tracking-widest text-vault-muted">Total Spent</p>
-            <p class="text-2xl font-extrabold text-vault-text mt-1">₱29,300</p>
-            <p class="text-xs text-vault-red mt-1">↑ 8% from last month</p>
-          </div>
-          <div class="bg-vault-surface rounded-2xl border border-vault-border p-5">
-            <p class="text-[10px] font-bold uppercase tracking-widest text-vault-muted">Budget Left</p>
-            <p class="text-2xl font-extrabold text-vault-green mt-1">₱15,700</p>
-            <p class="text-xs text-vault-muted mt-1">of ₱45,000 budget</p>
-          </div>
-          <div class="bg-vault-surface rounded-2xl border border-vault-border p-5 col-span-2 md:col-span-1">
-            <p class="text-[10px] font-bold uppercase tracking-widest text-vault-muted">Categories</p>
-            <p class="text-2xl font-extrabold text-vault-text mt-1">5</p>
-            <p class="text-xs text-vault-yellow mt-1">2 nearing limit</p>
-          </div>
-        </div>
-
-        <!-- Placeholder Card -->
         <div class="bg-vault-surface rounded-2xl border border-vault-border border-dashed p-10 text-center">
-          <i data-lucide="pie-chart" class="w-12 h-12 text-vault-muted/30 mx-auto"></i>
-          <p class="text-sm text-vault-muted mt-4">Detailed expense breakdowns and charts coming soon.</p>
-          <p class="text-xs text-vault-muted/50 mt-1">This view will include category drill-downs, trend analysis, and export tools.</p>
+          <i data-lucide="pie-chart" class="w-12 h-12 text-pink-400/20 mx-auto"></i>
+          <p class="text-sm text-vault-muted mt-4">Detailed expense breakdowns coming soon ✨</p>
+          <p class="text-xs text-vault-muted/50 mt-1">Category drill-downs, trend analysis, and more!</p>
         </div>
       </div>
-    </div><!-- /data-view="expenses" -->
+    </div>
 
-    <!-- ═══════════════════════════════════════════════════════
-         INVESTMENTS VIEW (scaffold)
-         ═══════════════════════════════════════════════════════ -->
+    <!-- ═══════ INVESTMENTS VIEW ═══════ -->
     <div data-view="investments" class="hidden">
       <div class="p-4 md:p-6 space-y-5">
-        <!-- Page Header -->
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-vault-green/10 flex items-center justify-center">
-            <i data-lucide="trending-up" class="w-5 h-5 text-vault-green"></i>
+          <div class="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center">
+            <i data-lucide="trending-up" class="w-5 h-5 text-purple-400"></i>
           </div>
           <div>
-            <h2 class="text-xl font-bold text-vault-text">Investments</h2>
-            <p class="text-xs text-vault-muted">Portfolio performance and asset allocation</p>
+            <h2 class="text-xl font-bold text-vault-text">Investments 📈</h2>
+            <p class="text-xs text-vault-muted">Portfolio & asset management</p>
           </div>
         </div>
-
-        <!-- Summary Cards -->
-        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-          <div class="bg-vault-surface rounded-2xl border border-vault-border p-5">
-            <p class="text-[10px] font-bold uppercase tracking-widest text-vault-muted">Portfolio Value</p>
-            <p class="text-2xl font-extrabold text-vault-text mt-1">₱185,400</p>
-            <p class="text-xs text-vault-green mt-1">↑ 12.4% all time</p>
-          </div>
-          <div class="bg-vault-surface rounded-2xl border border-vault-border p-5">
-            <p class="text-[10px] font-bold uppercase tracking-widest text-vault-muted">Monthly Return</p>
-            <p class="text-2xl font-extrabold text-vault-green mt-1">+₱4,200</p>
-            <p class="text-xs text-vault-muted mt-1">March 2026</p>
-          </div>
-          <div class="bg-vault-surface rounded-2xl border border-vault-border p-5 col-span-2 md:col-span-1">
-            <p class="text-[10px] font-bold uppercase tracking-widest text-vault-muted">Active Assets</p>
-            <p class="text-2xl font-extrabold text-vault-text mt-1">8</p>
-            <p class="text-xs text-vault-green mt-1">All performing</p>
-          </div>
-        </div>
-
-        <!-- Placeholder Card -->
         <div class="bg-vault-surface rounded-2xl border border-vault-border border-dashed p-10 text-center">
-          <i data-lucide="candlestick-chart" class="w-12 h-12 text-vault-muted/30 mx-auto"></i>
-          <p class="text-sm text-vault-muted mt-4">Investment charts and portfolio management coming soon.</p>
-          <p class="text-xs text-vault-muted/50 mt-1">This view will include stock trackers, crypto wallets, and dividend history.</p>
+          <i data-lucide="gem" class="w-12 h-12 text-purple-400/20 mx-auto"></i>
+          <p class="text-sm text-vault-muted mt-4">Investment tracking coming soon 💎</p>
+          <p class="text-xs text-vault-muted/50 mt-1">Stocks, crypto wallets, and returns tracking!</p>
         </div>
       </div>
-    </div><!-- /data-view="investments" -->
+    </div>
 
-    <!-- ═══════════════════════════════════════════════════════
-         TRANSACTIONS VIEW (scaffold)
-         ═══════════════════════════════════════════════════════ -->
+    <!-- ═══════ TRANSACTIONS VIEW ═══════ -->
     <div data-view="transactions" class="hidden">
       <div class="p-4 md:p-6 space-y-5">
-        <!-- Page Header -->
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-vault-green/10 flex items-center justify-center">
-            <i data-lucide="arrow-left-right" class="w-5 h-5 text-vault-green"></i>
+          <div class="w-10 h-10 rounded-xl bg-pink-500/10 flex items-center justify-center">
+            <i data-lucide="arrow-left-right" class="w-5 h-5 text-pink-400"></i>
           </div>
           <div>
-            <h2 class="text-xl font-bold text-vault-text">Transactions</h2>
-            <p class="text-xs text-vault-muted">Complete transaction history and search</p>
+            <h2 class="text-xl font-bold text-vault-text">Transactions 💳</h2>
+            <p class="text-xs text-vault-muted">Full transaction history</p>
           </div>
         </div>
-
-        <!-- Summary Cards -->
-        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-          <div class="bg-vault-surface rounded-2xl border border-vault-border p-5">
-            <p class="text-[10px] font-bold uppercase tracking-widest text-vault-muted">This Month</p>
-            <p class="text-2xl font-extrabold text-vault-text mt-1">24</p>
-            <p class="text-xs text-vault-muted mt-1">transactions</p>
-          </div>
-          <div class="bg-vault-surface rounded-2xl border border-vault-border p-5">
-            <p class="text-[10px] font-bold uppercase tracking-widest text-vault-muted">Total Outflow</p>
-            <p class="text-2xl font-extrabold text-vault-red mt-1">-₱29,300</p>
-            <p class="text-xs text-vault-muted mt-1">March 2026</p>
-          </div>
-          <div class="bg-vault-surface rounded-2xl border border-vault-border p-5 col-span-2 md:col-span-1">
-            <p class="text-[10px] font-bold uppercase tracking-widest text-vault-muted">Total Inflow</p>
-            <p class="text-2xl font-extrabold text-vault-green mt-1">+₱42,000</p>
-            <p class="text-xs text-vault-muted mt-1">March 2026</p>
-          </div>
-        </div>
-
-        <!-- Placeholder Card -->
         <div class="bg-vault-surface rounded-2xl border border-vault-border border-dashed p-10 text-center">
-          <i data-lucide="search" class="w-12 h-12 text-vault-muted/30 mx-auto"></i>
-          <p class="text-sm text-vault-muted mt-4">Advanced search, filters, and export tools coming soon.</p>
-          <p class="text-xs text-vault-muted/50 mt-1">This view will include date range filters, category search, and CSV/PDF export.</p>
+          <i data-lucide="search" class="w-12 h-12 text-pink-400/20 mx-auto"></i>
+          <p class="text-sm text-vault-muted mt-4">Search & filters coming soon 🔍</p>
+          <p class="text-xs text-vault-muted/50 mt-1">Date range filters, export, and more!</p>
         </div>
       </div>
-    </div><!-- /data-view="transactions" -->
+    </div>
 
   </main>
 
-  <!-- ═══════════════════════════════════════════════════════
-       DESKTOP: TOAST NOTIFICATION CONTAINER
-       ═══════════════════════════════════════════════════════ -->
-  <div
-    id="toast-container"
-    class="hidden md:block fixed top-5 right-5 z-[100] space-y-3 pointer-events-none"
-    role="alert"
-    aria-live="assertive"
-    aria-label="Notifications"
-  ></div>
+  <!-- TOAST CONTAINER -->
+  <div id="toast-container" class="hidden md:block fixed top-5 right-5 z-[100] space-y-3 pointer-events-none" role="alert" aria-live="assertive"></div>
 
-  <!-- ═══════════════════════════════════════════════════════
-       MOBILE: FLOATING ACTION BUTTON (+)
-       ═══════════════════════════════════════════════════════ -->
-  <button
-    id="fab-btn"
-    type="button"
-    aria-label="Add new transaction"
-    class="
-      md:hidden fixed bottom-6 right-5 z-30
-      w-14 h-14 rounded-full
-      bg-vault-green text-vault-bg
-      flex items-center justify-center
-      shadow-glow-green hover:shadow-glow-green-lg
-      hover:scale-105 active:scale-95
-      transition-all duration-200
-      focus:outline-none focus-visible:ring-2 focus-visible:ring-vault-green focus-visible:ring-offset-2 focus-visible:ring-offset-vault-bg
-      fab-pulse
-    "
-  >
+  <!-- FAB -->
+  <button id="fab-btn" type="button" aria-label="Add new transaction"
+    class="md:hidden fixed bottom-6 right-5 z-30 w-14 h-14 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 text-white flex items-center justify-center shadow-glow-green hover:shadow-glow-green-lg hover:scale-105 active:scale-95 transition-all duration-200 fab-pulse">
     <i data-lucide="plus" class="w-7 h-7"></i>
   </button>
 
-  <!-- ═══════════════════════════════════════════════════════
-       QUICK TRANSACTION MODAL
-       ═══════════════════════════════════════════════════════ -->
-  <div
-    id="transaction-modal"
-    class="fixed inset-0 z-[110] flex items-end md:items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300"
-    role="dialog"
-    aria-modal="true"
-    aria-label="Add new transaction"
-  >
-    <!-- Backdrop -->
+  <!-- QUICK TRANSACTION MODAL -->
+  <div id="transaction-modal" class="fixed inset-0 z-[110] flex items-end md:items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300" role="dialog" aria-modal="true" aria-label="Add transaction">
     <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" id="modal-backdrop"></div>
-
-    <!-- Modal Content -->
     <div class="relative w-full md:max-w-md bg-vault-surface border border-vault-border rounded-t-2xl md:rounded-2xl p-6 transform translate-y-4 md:translate-y-0 transition-transform duration-300" id="modal-content">
       <div class="flex items-center justify-between mb-6">
-        <h2 class="text-lg font-bold text-vault-text">Quick Transaction</h2>
-        <button
-          id="modal-close-btn"
-          type="button"
-          aria-label="Close dialog"
-          class="p-1.5 rounded-lg text-vault-muted hover:text-vault-red hover:bg-vault-card transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-vault-green"
-        >
+        <h2 class="text-lg font-bold text-vault-text">Quick Transaction ✨</h2>
+        <button id="modal-close-btn" type="button" aria-label="Close"
+          class="p-1.5 rounded-lg text-vault-muted hover:text-rose-400 hover:bg-vault-card transition-colors">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
 
       <form id="transaction-form" novalidate autocomplete="off" class="space-y-4">
-        <!-- Type Toggle -->
         <div class="flex rounded-xl bg-vault-card p-1 gap-1">
-          <button type="button" data-type="expense" class="type-toggle flex-1 py-2 text-xs font-semibold rounded-lg bg-vault-red/20 text-vault-red transition-colors">
-            Expense
-          </button>
-          <button type="button" data-type="income" class="type-toggle flex-1 py-2 text-xs font-semibold rounded-lg text-vault-muted hover:text-vault-text transition-colors">
-            Income
-          </button>
+          <button type="button" data-type="expense" class="type-toggle flex-1 py-2 text-xs font-semibold rounded-lg bg-rose-500/20 text-rose-400 transition-colors">Expense</button>
+          <button type="button" data-type="income" class="type-toggle flex-1 py-2 text-xs font-semibold rounded-lg text-vault-muted hover:text-vault-text transition-colors">Income</button>
         </div>
 
-        <!-- Description -->
         <div>
           <label for="txn-description" class="block text-xs font-medium text-vault-muted mb-1.5">Description</label>
-          <input
-            type="text"
-            id="txn-description"
-            name="description"
-            placeholder="e.g. Coffee at Blue Bottle"
-            maxlength="120"
-            class="w-full px-4 py-3 bg-vault-card border border-vault-border rounded-xl text-sm text-vault-text placeholder-vault-muted/50 focus:outline-none focus:border-vault-green focus:ring-1 focus:ring-vault-green/30 transition-colors"
-          />
-          <p class="form-error text-xs text-vault-red mt-1 hidden" id="txn-description-error"></p>
+          <input type="text" id="txn-description" name="description" placeholder="e.g. Jollibee lunch 🍗" maxlength="120"
+            class="w-full px-4 py-3 bg-vault-card border border-vault-border rounded-xl text-sm text-vault-text placeholder-vault-muted/50 focus:outline-none focus:border-pink-400 focus:ring-1 focus:ring-pink-400/30 transition-colors" />
+          <p class="form-error text-xs text-rose-400 mt-1 hidden" id="txn-description-error"></p>
         </div>
 
-        <!-- Amount -->
         <div>
           <label for="txn-amount" class="block text-xs font-medium text-vault-muted mb-1.5">Amount (₱)</label>
-          <input
-            type="number"
-            id="txn-amount"
-            name="amount"
-            placeholder="0.00"
-            step="0.01"
-            min="0.01"
-            class="w-full px-4 py-3 bg-vault-card border border-vault-border rounded-xl text-sm text-vault-text placeholder-vault-muted/50 focus:outline-none focus:border-vault-green focus:ring-1 focus:ring-vault-green/30 transition-colors"
-          />
-          <p class="form-error text-xs text-vault-red mt-1 hidden" id="txn-amount-error"></p>
+          <input type="number" id="txn-amount" name="amount" placeholder="0.00" step="0.01" min="0.01"
+            class="w-full px-4 py-3 bg-vault-card border border-vault-border rounded-xl text-sm text-vault-text placeholder-vault-muted/50 focus:outline-none focus:border-pink-400 focus:ring-1 focus:ring-pink-400/30 transition-colors" />
+          <p class="form-error text-xs text-rose-400 mt-1 hidden" id="txn-amount-error"></p>
         </div>
 
-        <!-- Category -->
         <div>
           <label for="txn-category" class="block text-xs font-medium text-vault-muted mb-1.5">Category</label>
-          <select
-            id="txn-category"
-            name="category"
-            class="w-full px-4 py-3 bg-vault-card border border-vault-border rounded-xl text-sm text-vault-text focus:outline-none focus:border-vault-green focus:ring-1 focus:ring-vault-green/30 transition-colors appearance-none"
-          >
+          <select id="txn-category" name="category"
+            class="w-full px-4 py-3 bg-vault-card border border-vault-border rounded-xl text-sm text-vault-text focus:outline-none focus:border-pink-400 focus:ring-1 focus:ring-pink-400/30 transition-colors appearance-none">
             <option value="" disabled selected>Select a category…</option>
-            <!-- Options populated by JS from state -->
           </select>
-          <p class="form-error text-xs text-vault-red mt-1 hidden" id="txn-category-error"></p>
+          <p class="form-error text-xs text-rose-400 mt-1 hidden" id="txn-category-error"></p>
         </div>
 
-        <!-- Submit -->
-        <button
-          type="submit"
-          id="txn-submit-btn"
-          class="w-full py-3.5 bg-vault-green text-vault-bg font-bold text-sm rounded-xl hover:bg-vault-green/90 active:scale-[0.98] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-vault-green focus-visible:ring-offset-2 focus-visible:ring-offset-vault-surface"
-        >
-          Log Transaction
+        <button type="submit" id="txn-submit-btn"
+          class="w-full py-3.5 bg-gradient-to-r from-pink-500 to-purple-500 text-white font-bold text-sm rounded-xl hover:from-pink-400 hover:to-purple-400 active:scale-[0.98] transition-all">
+          Log Transaction ✨
         </button>
       </form>
     </div>
@@ -729,9 +573,6 @@
 
   </div><!-- /app-layout -->
 
-  <!-- ═══════════════════════════════════════════════════════
-       SCRIPTS
-       ═══════════════════════════════════════════════════════ -->
   <script type="module" src="js/app.js"></script>
 </body>
 </html>

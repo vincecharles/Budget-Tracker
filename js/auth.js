@@ -1,139 +1,208 @@
 /**
  * ═══════════════════════════════════════════════════════
- * AUTH.JS — Mock Authentication Module
- * localStorage-backed login state with form-based UX.
+ * AUTH.JS — Onboarding Flow (replaces Login)
+ * No backend needed — localStorage-backed first-run setup.
  * ═══════════════════════════════════════════════════════
  */
 
-const AUTH_KEY = 'vaultLedger_isLoggedIn';
+import appState from './state.js';
+
+const ONBOARDED_KEY = 'vaultLedger_onboarded';
 
 // ─── Public API ───
 
-export function isLoggedIn() {
-  return localStorage.getItem(AUTH_KEY) === 'true';
+export function isOnboarded() {
+  return localStorage.getItem(ONBOARDED_KEY) === 'true';
 }
 
-export function login(email, password) {
-  if (!email || !email.trim()) {
-    return { success: false, error: 'Please enter your email address.' };
-  }
-  if (!password || !password.trim()) {
-    return { success: false, error: 'Please enter your password.' };
-  }
-  // Mock validation — accepts any well-formed input
-  if (!email.includes('@')) {
-    return { success: false, error: 'Please enter a valid email address.' };
-  }
-  if (password.length < 4) {
-    return { success: false, error: 'Password must be at least 4 characters.' };
-  }
-
-  localStorage.setItem(AUTH_KEY, 'true');
-  return { success: true };
+export function completeOnboarding() {
+  localStorage.setItem(ONBOARDED_KEY, 'true');
 }
 
-export function logout() {
-  localStorage.removeItem(AUTH_KEY);
+export function resetOnboarding() {
+  localStorage.removeItem(ONBOARDED_KEY);
 }
 
 /**
- * Initialize auth — wire up the login form and toggle views.
- * Returns true if user is authenticated (so boot can continue).
+ * Initialize onboarding — wire up the wizard steps.
+ * Returns true if user has already completed onboarding.
  */
 export function initAuth() {
-  const loginView = document.getElementById('login-view');
+  const onboardingView = document.getElementById('login-view');
   const appLayout = document.getElementById('app-layout');
-  const loginForm = document.getElementById('login-form');
-  const loginError = document.getElementById('login-error');
-  const loginBtn = document.getElementById('login-btn');
-  const passwordToggle = document.getElementById('password-toggle');
-  const passwordInput = document.getElementById('login-password');
 
-  if (!loginView || !appLayout) {
-    console.warn('[Auth] Missing login-view or app-layout elements.');
+  if (!onboardingView || !appLayout) {
+    console.warn('[Auth] Missing onboarding or app-layout elements.');
     return true;
   }
 
-  // ─── Password show/hide toggle ───
-  if (passwordToggle && passwordInput) {
-    passwordToggle.addEventListener('click', () => {
-      const isPassword = passwordInput.type === 'password';
-      passwordInput.type = isPassword ? 'text' : 'password';
-      // Swap icon
-      const icon = passwordToggle.querySelector('i');
-      if (icon) {
-        icon.setAttribute('data-lucide', isPassword ? 'eye-off' : 'eye');
-        if (window.lucide) window.lucide.createIcons({ nodes: [passwordToggle] });
-      }
-    });
-  }
+  // ─── Wire up wizard navigation ───
+  setupWizard(onboardingView, appLayout);
 
-  // ─── Form submit handler (supports Enter key) ───
-  if (loginForm) {
-    loginForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-
-      const email = document.getElementById('login-email')?.value;
-      const password = passwordInput?.value;
-
-      // Clear previous errors
-      if (loginError) {
-        loginError.classList.add('hidden');
-        loginError.textContent = '';
-      }
-
-      // Show loading state
-      if (loginBtn) {
-        loginBtn.disabled = true;
-        loginBtn.innerHTML = `
-          <span class="login-spinner"></span>
-          <span>Authenticating…</span>
-        `;
-      }
-
-      // Simulate network delay for realism
-      setTimeout(() => {
-        const result = login(email, password);
-
-        if (result.success) {
-          // Transition to app
-          loginView.classList.add('login-exit');
-          setTimeout(() => {
-            loginView.classList.add('hidden');
-            appLayout.classList.remove('hidden');
-            // Dispatch a custom event so app.js can finish booting
-            window.dispatchEvent(new CustomEvent('vault:authenticated'));
-          }, 400);
-        } else {
-          // Show error
-          if (loginError) {
-            loginError.textContent = result.error;
-            loginError.classList.remove('hidden');
-          }
-          // Reset button
-          if (loginBtn) {
-            loginBtn.disabled = false;
-            loginBtn.innerHTML = `
-              <i data-lucide="log-in" class="w-4 h-4"></i>
-              <span>Sign In</span>
-            `;
-            if (window.lucide) window.lucide.createIcons({ nodes: [loginBtn] });
-          }
-        }
-      }, 800);
-    });
-  }
-
-  // ─── Check current auth state ───
-  if (isLoggedIn()) {
-    loginView.classList.add('hidden');
+  // ─── Check if already onboarded ───
+  if (isOnboarded()) {
+    onboardingView.classList.add('hidden');
     appLayout.classList.remove('hidden');
     return true;
   } else {
-    loginView.classList.remove('hidden');
+    onboardingView.classList.remove('hidden');
     appLayout.classList.add('hidden');
     return false;
   }
 }
 
-export default { isLoggedIn, login, logout, initAuth };
+/**
+ * Set up the 3-step wizard with slide animations.
+ */
+function setupWizard(onboardingView, appLayout) {
+  const steps = onboardingView.querySelectorAll('[data-step]');
+  const dots = onboardingView.querySelectorAll('[data-dot]');
+  let currentStep = 1;
+
+  // Step 1 → Step 2
+  const step1Next = document.getElementById('step1-next');
+  if (step1Next) {
+    step1Next.addEventListener('click', () => {
+      const nameInput = document.getElementById('onboard-name');
+      const name = nameInput?.value?.trim();
+      if (!name) {
+        nameInput?.classList.add('input-error');
+        nameInput?.focus();
+        return;
+      }
+      nameInput?.classList.remove('input-error');
+      goToStep(2, steps, dots);
+      currentStep = 2;
+    });
+  }
+
+  // Step 2 → Step 3
+  const step2Next = document.getElementById('step2-next');
+  const step2Back = document.getElementById('step2-back');
+  if (step2Next) {
+    step2Next.addEventListener('click', () => {
+      const incomeInput = document.getElementById('onboard-income');
+      const income = parseFloat(incomeInput?.value);
+      if (!income || income <= 0) {
+        incomeInput?.classList.add('input-error');
+        incomeInput?.focus();
+        return;
+      }
+      incomeInput?.classList.remove('input-error');
+      // Pre-fill suggested budgets (percentage-based)
+      prefillBudgets(income);
+      goToStep(3, steps, dots);
+      currentStep = 3;
+    });
+  }
+  if (step2Back) {
+    step2Back.addEventListener('click', () => {
+      goToStep(1, steps, dots);
+      currentStep = 1;
+    });
+  }
+
+  // Step 3 → Complete
+  const step3Done = document.getElementById('step3-done');
+  const step3Back = document.getElementById('step3-back');
+  if (step3Done) {
+    step3Done.addEventListener('click', () => {
+      finishOnboarding(onboardingView, appLayout);
+    });
+  }
+  if (step3Back) {
+    step3Back.addEventListener('click', () => {
+      goToStep(2, steps, dots);
+      currentStep = 2;
+    });
+  }
+
+  // Enter key support on inputs
+  document.getElementById('onboard-name')?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); step1Next?.click(); }
+  });
+  document.getElementById('onboard-income')?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); step2Next?.click(); }
+  });
+}
+
+/**
+ * Animate between wizard steps.
+ */
+function goToStep(stepNum, steps, dots) {
+  steps.forEach(s => {
+    const sNum = parseInt(s.getAttribute('data-step'));
+    if (sNum === stepNum) {
+      s.classList.remove('hidden');
+      s.style.animation = 'stepSlideIn 0.4s cubic-bezier(0.21, 1.02, 0.73, 1) forwards';
+    } else {
+      s.classList.add('hidden');
+      s.style.animation = '';
+    }
+  });
+  dots.forEach(d => {
+    const dNum = parseInt(d.getAttribute('data-dot'));
+    if (dNum === stepNum) {
+      d.classList.add('bg-pink-400', 'scale-125');
+      d.classList.remove('bg-white/20');
+    } else if (dNum < stepNum) {
+      d.classList.add('bg-pink-400/50');
+      d.classList.remove('bg-white/20', 'scale-125');
+    } else {
+      d.classList.remove('bg-pink-400', 'bg-pink-400/50', 'scale-125');
+      d.classList.add('bg-white/20');
+    }
+  });
+}
+
+/**
+ * Pre-fill suggested budget amounts based on income.
+ */
+function prefillBudgets(income) {
+  const suggestions = {
+    'cat_food': 0.15,
+    'cat_groceries': 0.20,
+    'cat_bills': 0.10,
+    'cat_rent': 0.30,
+    'cat_transport': 0.10,
+    'cat_shopping': 0.10,
+  };
+
+  for (const [catId, pct] of Object.entries(suggestions)) {
+    const input = document.getElementById(`budget-${catId}`);
+    if (input && !input.value) {
+      input.value = Math.round(income * pct);
+    }
+  }
+}
+
+/**
+ * Finish onboarding — save data and transition to app.
+ */
+function finishOnboarding(onboardingView, appLayout) {
+  const name = document.getElementById('onboard-name')?.value?.trim() || 'User';
+  const income = parseFloat(document.getElementById('onboard-income')?.value) || 0;
+
+  // Gather category budgets
+  const categoryBudgets = {};
+  appState.categories.forEach(cat => {
+    const input = document.getElementById(`budget-${cat.id}`);
+    if (input) {
+      categoryBudgets[cat.id] = parseFloat(input.value) || 0;
+    }
+  });
+
+  // Save to state
+  appState.completeOnboarding({ name, monthlyIncome: income, categoryBudgets });
+  completeOnboarding();
+
+  // Animate transition
+  onboardingView.classList.add('login-exit');
+  setTimeout(() => {
+    onboardingView.classList.add('hidden');
+    appLayout.classList.remove('hidden');
+    window.dispatchEvent(new CustomEvent('vault:authenticated'));
+  }, 400);
+}
+
+export default { isOnboarded, completeOnboarding, resetOnboarding, initAuth };
