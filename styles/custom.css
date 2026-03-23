@@ -1,0 +1,257 @@
+/* ═══════════════════════════════════════════════════════
+   VAULT LEDGER — Custom Styles
+   Beyond Tailwind utilities: scrollbars, glows,
+   animations, and component-specific overrides.
+   ═══════════════════════════════════════════════════════ */
+
+/* ─── Sidebar Scrollbar ─── */
+.sidebar-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+.sidebar-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sidebar-scroll::-webkit-scrollbar-thumb {
+  background: rgba(0, 230, 118, 0.2);
+  border-radius: 9999px;
+}
+.sidebar-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 230, 118, 0.4);
+}
+
+/* ─── Safe-to-Spend Pill Glow ─── */
+.safe-to-spend-pill {
+  box-shadow:
+    0 0 15px rgba(0, 230, 118, 0.08),
+    inset 0 1px 0 rgba(0, 230, 118, 0.06);
+  transition: box-shadow 0.3s ease;
+}
+.safe-to-spend-pill:hover {
+  box-shadow:
+    0 0 25px rgba(0, 230, 118, 0.15),
+    inset 0 1px 0 rgba(0, 230, 118, 0.1);
+}
+
+/* ─── Category Progress Bar ─── */
+.progress-bar-track {
+  height: 8px;
+  border-radius: 9999px;
+  background: rgba(30, 46, 40, 0.8);
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+}
+
+.progress-bar-fill.status-safe {
+  background: linear-gradient(90deg, #00c853, #00e676);
+}
+.progress-bar-fill.status-warning {
+  background: linear-gradient(90deg, #ff8f00, #ffc107);
+}
+.progress-bar-fill.status-danger {
+  background: linear-gradient(90deg, #d50000, #ff5252);
+}
+
+/* Shimmer animation on progress bars */
+.progress-bar-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.08) 50%,
+    transparent 100%
+  );
+  animation: shimmer 2.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* ─── Toast Notification ─── */
+.toast-enter {
+  animation: toastSlideIn 0.35s cubic-bezier(0.21, 1.02, 0.73, 1) forwards;
+}
+.toast-exit {
+  animation: toastSlideOut 0.3s ease-in forwards;
+}
+
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes toastSlideOut {
+  from {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%) scale(0.95);
+  }
+}
+
+/* ─── Mobile Alert Banner ─── */
+.banner-enter {
+  animation: bannerFadeIn 0.4s ease-out forwards;
+}
+
+@keyframes bannerFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ─── FAB Pulse ─── */
+.fab-pulse {
+  position: relative;
+}
+.fab-pulse::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 9999px;
+  background: rgba(0, 230, 118, 0.2);
+  animation: fabPulse 2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes fabPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.4;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 0;
+  }
+}
+
+/* ─── Modal Transition ─── */
+.modal-active {
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+.modal-active #modal-content {
+  transform: translateY(0) !important;
+}
+
+/* ─── Navigation Chevron Rotation ─── */
+.nav-chevron-expanded {
+  transform: rotate(0deg) !important;
+}
+
+/* ─── Transaction Row ─── */
+.transaction-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  border-radius: 0.75rem;
+  transition: background-color 0.15s ease;
+}
+.transaction-row:hover {
+  background-color: rgba(24, 36, 32, 0.6);
+}
+
+/* ─── Budget Health Item (Mobile) ─── */
+.budget-health-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.625rem 0;
+  border-bottom: 1px solid rgba(30, 46, 40, 0.5);
+}
+.budget-health-item:last-child {
+  border-bottom: none;
+}
+
+/* ─── Recent Activity Item (Mobile) ─── */
+.activity-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+}
+
+/* ─── Form Validation Error State ─── */
+.input-error {
+  border-color: #ff5252 !important;
+  box-shadow: 0 0 0 1px rgba(255, 82, 82, 0.3) !important;
+}
+
+/* ─── Focus visible ring override for dark bg ─── */
+*:focus-visible {
+  outline: none;
+}
+
+/* ─── Custom select arrow ─── */
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238a9a8e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 12px;
+}
+
+/* ─── Type Toggle Active States ─── */
+.type-toggle[data-active="true"][data-type="expense"] {
+  background: rgba(255, 82, 82, 0.2);
+  color: #ff5252;
+}
+.type-toggle[data-active="true"][data-type="income"] {
+  background: rgba(0, 230, 118, 0.2);
+  color: #00e676;
+}
+
+/* ─── Overage Alert Inline (Transaction Log) ─── */
+.overage-alert-inline {
+  background: rgba(255, 82, 82, 0.08);
+  border: 1px solid rgba(255, 82, 82, 0.2);
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* ─── Smooth scroll behavior ─── */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ─── Screen reader only (utility) ─── */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
