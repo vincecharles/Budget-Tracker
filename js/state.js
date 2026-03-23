@@ -299,6 +299,74 @@ class StateManager {
     this._notify();
   }
 
+  /**
+   * Update an existing transaction. Reverses old amounts, applies new.
+   */
+  updateTransaction(id, updates) {
+    const txn = this._state.transactions.find(t => t.id === id);
+    if (!txn) return;
+
+    // Reverse old effect
+    if (txn.type === 'expense' && txn.category) {
+      const oldCat = this._state.categories.find(c => c.id === txn.category);
+      if (oldCat) oldCat.spent = Math.max(0, oldCat.spent - Math.abs(txn.amount));
+    }
+    if (txn.type === 'expense') {
+      this._state.budget.totalSpent = Math.max(0, this._state.budget.totalSpent - Math.abs(txn.amount));
+    }
+
+    // Apply updates
+    Object.assign(txn, updates);
+
+    // Apply new effect
+    if (txn.type === 'expense' && txn.category) {
+      const newCat = this._state.categories.find(c => c.id === txn.category);
+      if (newCat) newCat.spent += Math.abs(txn.amount);
+    }
+    if (txn.type === 'expense') {
+      this._state.budget.totalSpent += Math.abs(txn.amount);
+    }
+
+    this._checkOverages();
+    this._notify();
+  }
+
+  /**
+   * Update a category's name and/or budget.
+   */
+  updateCategory(id, updates) {
+    const cat = this._state.categories.find(c => c.id === id);
+    if (!cat) return;
+
+    // Adjust monthly total if budget changed
+    if (updates.budgeted !== undefined && updates.budgeted !== cat.budgeted) {
+      this._state.budget.monthlyTotal += (updates.budgeted - cat.budgeted);
+    }
+
+    if (updates.name !== undefined) cat.name = updates.name.trim();
+    if (updates.budgeted !== undefined) cat.budgeted = updates.budgeted;
+
+    this._checkOverages();
+    this._notify();
+  }
+
+  /**
+   * Delete a category. Removes from array and adjusts monthly total.
+   */
+  deleteCategory(id) {
+    const idx = this._state.categories.findIndex(c => c.id === id);
+    if (idx === -1) return;
+
+    const cat = this._state.categories[idx];
+
+    // Adjust monthly budget total
+    this._state.budget.monthlyTotal = Math.max(0, this._state.budget.monthlyTotal - cat.budgeted);
+    this._state.budget.totalSpent = Math.max(0, this._state.budget.totalSpent - cat.spent);
+
+    this._state.categories.splice(idx, 1);
+    this._notify();
+  }
+
   dismissNotification(id) {
     const notif = this._state.notifications.find(n => n.id === id);
     if (notif) {

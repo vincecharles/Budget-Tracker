@@ -154,25 +154,20 @@ function handleTouchEnd() {
 /**
  * Open the Quick Transaction modal.
  */
-function openTransactionModal() {
+export function openTransactionModal() {
   const modal = document.getElementById('transaction-modal');
   if (!modal) return;
 
   modal.classList.add('modal-active');
   document.body.style.overflow = 'hidden';
 
-  // Close drawer if open on mobile
-  if (isDrawerOpen) {
-    closeDrawer();
-  }
+  if (isDrawerOpen) closeDrawer();
 
-  // Focus first input
   setTimeout(() => {
     const firstInput = modal.querySelector('input');
     firstInput?.focus();
   }, 150);
 
-  // Setup close listeners
   const closeBtn = document.getElementById('modal-close-btn');
   const backdrop = document.getElementById('modal-backdrop');
 
@@ -194,21 +189,16 @@ export function closeTransactionModal() {
 
   document.removeEventListener('keydown', handleModalEscape);
 
-  // Return focus to FAB or sidebar CTA
+  window.dispatchEvent(new CustomEvent('vault:modalClosed'));
+
   const fabBtn = document.getElementById('fab-btn');
   const sidebarBtn = document.getElementById('sidebar-quick-transaction-btn');
-
-  if (window.innerWidth < 768 && fabBtn) {
-    fabBtn.focus();
-  } else if (sidebarBtn) {
-    sidebarBtn.focus();
-  }
+  if (window.innerWidth < 768 && fabBtn) fabBtn.focus();
+  else if (sidebarBtn) sidebarBtn.focus();
 }
 
 function handleModalEscape(e) {
-  if (e.key === 'Escape') {
-    closeTransactionModal();
-  }
+  if (e.key === 'Escape') closeTransactionModal();
 }
 
-export default { initMobile, closeTransactionModal };
+export default { initMobile, closeTransactionModal, openTransactionModal };

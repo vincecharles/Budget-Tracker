@@ -124,14 +124,24 @@ function renderCategoryBars() {
       const status = appState.getCategoryStatus(cat);
 
       return `
-        <div class="space-y-2 animate-slide-up" style="animation-delay: ${i * 80}ms">
+        <div class="space-y-2 animate-slide-up group/cat" style="animation-delay: ${i * 80}ms">
           <div class="flex items-center justify-between">
             <span class="text-xs font-medium text-vault-text">${cat.name}</span>
-            <span class="text-[11px] font-semibold ${
-              status === 'danger' ? 'text-rose-400' :
-              status === 'warning' ? 'text-amber-400' :
-              'text-pink-400'
-            }">${pct}% used</span>
+            <div class="flex items-center gap-1">
+              <span class="text-[11px] font-semibold ${
+                status === 'danger' ? 'text-rose-400' :
+                status === 'warning' ? 'text-amber-400' :
+                'text-pink-400'
+              }">${pct}% used</span>
+              <button type="button" data-edit-cat="${cat.id}" title="Edit"
+                class="p-1 rounded text-vault-muted/0 group-hover/cat:text-vault-muted hover:!text-pink-400 transition-all">
+                <i data-lucide="pencil" class="w-3 h-3 pointer-events-none"></i>
+              </button>
+              <button type="button" data-delete-cat="${cat.id}" title="Delete"
+                class="p-1 rounded text-vault-muted/0 group-hover/cat:text-vault-muted hover:!text-rose-400 transition-all">
+                <i data-lucide="trash-2" class="w-3 h-3 pointer-events-none"></i>
+              </button>
+            </div>
           </div>
           <div class="progress-bar-track" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100">
             <div class="progress-bar-fill status-${status}" style="width: ${pct}%"></div>
@@ -144,6 +154,29 @@ function renderCategoryBars() {
       `;
     })
     .join('');
+
+  // Wire up edit buttons
+  container.querySelectorAll('[data-edit-cat]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const catId = btn.getAttribute('data-edit-cat');
+      window.dispatchEvent(new CustomEvent('vault:editCategory', { detail: { catId } }));
+    });
+  });
+
+  // Wire up delete buttons
+  container.querySelectorAll('[data-delete-cat]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const catId = btn.getAttribute('data-delete-cat');
+      const cat = appState.categories.find(c => c.id === catId);
+      if (cat && confirm(`Delete "${cat.name}" category?`)) {
+        appState.deleteCategory(catId);
+      }
+    });
+  });
+
+  if (window.lucide) window.lucide.createIcons({ nodes: [container] });
 }
 
 export default { initCharts };
