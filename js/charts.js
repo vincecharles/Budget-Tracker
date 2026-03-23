@@ -119,7 +119,6 @@ function renderCategoryBars() {
   }
 
   container.innerHTML = categories
-    .slice(0, 5)
     .map((cat, i) => {
       const pct = cat.budgeted > 0 ? Math.min(100, Math.round((cat.spent / cat.budgeted) * 100)) : 0;
       const status = appState.getCategoryStatus(cat);

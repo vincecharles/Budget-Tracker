@@ -18,15 +18,15 @@
       theme: {
         extend: {
           colors: {
-            'vault-bg':      '#110b19',
-            'vault-surface': '#1a1225',
-            'vault-card':    '#231a30',
+            'vault-bg':      '#150b14',
+            'vault-surface': '#1e1220',
+            'vault-card':    '#2a1a28',
             'vault-green':   '#f472b6',
             'vault-yellow':  '#fbbf24',
             'vault-red':     '#fb7185',
-            'vault-text':    '#f0e6f6',
-            'vault-muted':   '#9886a8',
-            'vault-border':  '#2d2140',
+            'vault-text':    '#f5e8f0',
+            'vault-muted':   '#a0899a',
+            'vault-border':  '#3a2035',
           },
           fontFamily: {
             inter: ['Outfit', 'system-ui', 'sans-serif'],
@@ -400,9 +400,12 @@
         <section class="bg-vault-surface rounded-2xl border border-vault-border p-5" aria-label="Category Health">
           <div class="flex items-center justify-between mb-5">
             <h3 class="text-sm font-semibold text-vault-text">Category Health 🎀</h3>
-            <button type="button" class="p-1 text-vault-muted hover:text-vault-text transition-colors" aria-label="More">
-              <i data-lucide="more-horizontal" class="w-4 h-4"></i>
-            </button>
+            <div class="flex items-center gap-2">
+              <button type="button" id="add-category-btn" aria-label="Add category"
+                class="p-1.5 rounded-lg text-vault-muted hover:text-pink-400 hover:bg-vault-card transition-all group" title="Add Category">
+                <i data-lucide="plus-circle" class="w-4 h-4 group-hover:scale-110 transition-transform"></i>
+              </button>
+            </div>
           </div>
           <div id="category-health-bars" class="space-y-5">
             <!-- Rendered by JS -->
@@ -554,18 +557,64 @@
           <p class="form-error text-xs text-rose-400 mt-1 hidden" id="txn-amount-error"></p>
         </div>
 
-        <div>
-          <label for="txn-category" class="block text-xs font-medium text-vault-muted mb-1.5">Category</label>
-          <select id="txn-category" name="category"
-            class="w-full px-4 py-3 bg-vault-card border border-vault-border rounded-xl text-sm text-vault-text focus:outline-none focus:border-pink-400 focus:ring-1 focus:ring-pink-400/30 transition-colors appearance-none">
-            <option value="" disabled selected>Select a category…</option>
-          </select>
-          <p class="form-error text-xs text-rose-400 mt-1 hidden" id="txn-category-error"></p>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label for="txn-date" class="block text-xs font-medium text-vault-muted mb-1.5">Date 📅</label>
+            <input type="date" id="txn-date" name="date"
+              class="w-full px-4 py-3 bg-vault-card border border-vault-border rounded-xl text-sm text-vault-text focus:outline-none focus:border-pink-400 focus:ring-1 focus:ring-pink-400/30 transition-colors" />
+          </div>
+          <div>
+            <label for="txn-category" class="block text-xs font-medium text-vault-muted mb-1.5">Category</label>
+            <select id="txn-category" name="category"
+              class="w-full px-4 py-3 bg-vault-card border border-vault-border rounded-xl text-sm text-vault-text focus:outline-none focus:border-pink-400 focus:ring-1 focus:ring-pink-400/30 transition-colors appearance-none">
+              <option value="" disabled selected>Select…</option>
+            </select>
+            <p class="form-error text-xs text-rose-400 mt-1 hidden" id="txn-category-error"></p>
+          </div>
         </div>
 
         <button type="submit" id="txn-submit-btn"
           class="w-full py-3.5 bg-gradient-to-r from-pink-500 to-purple-500 text-white font-bold text-sm rounded-xl hover:from-pink-400 hover:to-purple-400 active:scale-[0.98] transition-all">
           Log Transaction ✨
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       ADD CATEGORY MODAL
+       ═══════════════════════════════════════════════════════ -->
+  <div id="category-modal" class="fixed inset-0 z-[120] flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300" role="dialog" aria-modal="true" aria-label="Add category">
+    <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" id="category-modal-backdrop"></div>
+    <div class="relative w-full max-w-xs mx-4 bg-vault-surface border border-vault-border rounded-2xl p-6 transform scale-95 transition-transform duration-300">
+      <div class="flex items-center justify-between mb-5">
+        <h2 class="text-base font-bold text-vault-text">New Category ✨</h2>
+        <button id="category-modal-close" type="button" aria-label="Close"
+          class="p-1.5 rounded-lg text-vault-muted hover:text-rose-400 hover:bg-vault-card transition-colors">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <form id="category-form" novalidate autocomplete="off" class="space-y-4">
+        <div>
+          <label for="cat-name" class="block text-xs font-medium text-vault-muted mb-1.5">Category Name</label>
+          <input type="text" id="cat-name" placeholder="e.g. Coffee ☕" maxlength="40"
+            class="w-full px-4 py-3 bg-vault-card border border-vault-border rounded-xl text-sm text-vault-text placeholder-vault-muted/50 focus:outline-none focus:border-pink-400 focus:ring-1 focus:ring-pink-400/30 transition-colors" />
+          <p class="form-error text-xs text-rose-400 mt-1 hidden" id="cat-name-error"></p>
+        </div>
+
+        <div>
+          <label for="cat-budget" class="block text-xs font-medium text-vault-muted mb-1.5">Monthly Budget (₱)</label>
+          <div class="relative">
+            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-pink-400 font-bold pointer-events-none">₱</span>
+            <input type="number" id="cat-budget" placeholder="0" min="0" step="100"
+              class="w-full pl-8 pr-4 py-3 bg-vault-card border border-vault-border rounded-xl text-sm text-vault-text placeholder-vault-muted/50 focus:outline-none focus:border-pink-400 focus:ring-1 focus:ring-pink-400/30 transition-colors" />
+          </div>
+        </div>
+
+        <button type="submit"
+          class="w-full py-3 bg-gradient-to-r from-pink-500 to-purple-500 text-white font-bold text-sm rounded-xl hover:from-pink-400 hover:to-purple-400 active:scale-[0.98] transition-all">
+          Add Category 🎀
         </button>
       </form>
     </div>

@@ -209,7 +209,7 @@ class StateManager {
   addTransaction(txn) {
     const newTxn = {
       id: `txn_${Date.now()}`,
-      date: new Date().toISOString(),
+      date: txn.date || new Date().toISOString(),
       ...txn,
     };
 
@@ -232,6 +232,45 @@ class StateManager {
 
     this._checkOverages();
     this._notify();
+  }
+
+  /**
+   * Add a custom category with random accent color.
+   */
+  addCategory(name, budget) {
+    const COLORS = [
+      '#f472b6', '#a78bfa', '#fb923c', '#38bdf8', '#34d399',
+      '#f9a8d4', '#c084fc', '#fbbf24', '#67e8f9', '#86efac',
+      '#fda4af', '#e879f9', '#fdba74', '#7dd3fc', '#6ee7b7',
+    ];
+    const ICONS = ['tag', 'star', 'heart', 'gift', 'sparkles', 'flower-2', 'gem', 'candy'];
+
+    const usedColors = this._state.categories.map(c => c.color);
+    const availableColors = COLORS.filter(c => !usedColors.includes(c));
+    const color = availableColors.length > 0
+      ? availableColors[Math.floor(Math.random() * availableColors.length)]
+      : COLORS[Math.floor(Math.random() * COLORS.length)];
+    const icon = ICONS[Math.floor(Math.random() * ICONS.length)];
+
+    const newCat = {
+      id: `cat_${Date.now()}`,
+      name: name.trim(),
+      icon,
+      budgeted: budget || 0,
+      spent: 0,
+      color,
+      parentGroup: 'Monthly Expenses',
+    };
+
+    this._state.categories.push(newCat);
+
+    // Update total monthly budget
+    if (budget > 0) {
+      this._state.budget.monthlyTotal += budget;
+    }
+
+    this._notify();
+    return newCat;
   }
 
   dismissNotification(id) {

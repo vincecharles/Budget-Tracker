@@ -1,6 +1,7 @@
 /**
  * ═══════════════════════════════════════════════════════
  * RENDER.JS — DOM Rendering with Empty State Support
+ * Displays actual transaction dates from state.
  * ═══════════════════════════════════════════════════════
  */
 
@@ -45,7 +46,6 @@ function renderHeroCard() {
     mobileHeroAmount.textContent = `₱${safe.toLocaleString('en-PH', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
   }
 
-  // Mobile top bar balance
   const topBarBalance = document.getElementById('topbar-balance');
   if (topBarBalance) {
     const safe = appState.safeToSpend;
@@ -61,7 +61,6 @@ function renderTransactionLog() {
 
   const transactions = appState.transactions.slice(0, 6);
 
-  // Empty state
   if (transactions.length === 0) {
     container.innerHTML = `
       <div class="text-center py-8 animate-fade-in">
@@ -84,6 +83,9 @@ function renderTransactionLog() {
     const bgColor = isExpense ? 'bg-rose-500/10' : 'bg-emerald-500/10';
     const iconColor = isExpense ? 'text-rose-400' : 'text-emerald-400';
 
+    // Format the actual stored date
+    const dateDisplay = formatTransactionDate(txn.date);
+
     const showOverageAlert = index === 0 && appState.overageCategories.length > 0;
 
     let html = `
@@ -93,7 +95,7 @@ function renderTransactionLog() {
         </div>
         <div class="flex-1 min-w-0">
           <p class="text-sm font-medium text-vault-text truncate">${escapeHtml(txn.description)}</p>
-          <p class="text-[11px] text-vault-muted mt-0.5">${escapeHtml(txn.subtitle || '')}</p>
+          <p class="text-[11px] text-vault-muted mt-0.5">${dateDisplay}</p>
         </div>
         <span class="text-sm font-semibold ${amountColor}">
           ${amountPrefix}${absAmount}
@@ -133,7 +135,7 @@ function renderMobileBudgetHealth() {
   if (categories.length === 0) {
     container.innerHTML = `
       <div class="text-center py-4">
-        <p class="text-xs text-vault-muted">Complete onboarding to set up your budgets 🎀</p>
+        <p class="text-xs text-vault-muted">Complete setup to see budget health 🎀</p>
       </div>
     `;
     return;
@@ -182,14 +184,14 @@ function renderRecentActivity() {
     const amountColor = isExpense ? 'text-rose-400' : 'text-emerald-400';
     const amountPrefix = isExpense ? '-₱' : '+₱';
     const absAmount = Math.abs(txn.amount).toLocaleString('en-PH', { minimumFractionDigits: 2 });
-    const timeAgo = getRelativeTime(txn.date);
+    const dateDisplay = formatTransactionDate(txn.date);
 
     return `
       <div class="activity-item">
         <span class="w-2 h-2 rounded-full ${dotColor} shrink-0"></span>
         <div class="flex-1 min-w-0">
           <p class="text-sm text-vault-text truncate">${escapeHtml(txn.description)}</p>
-          <p class="text-[10px] text-vault-muted mt-0.5">${timeAgo}</p>
+          <p class="text-[10px] text-vault-muted mt-0.5">${dateDisplay}</p>
         </div>
         <span class="text-xs font-semibold ${amountColor}">${amountPrefix}${absAmount}</span>
       </div>
@@ -205,17 +207,27 @@ function escapeHtml(text) {
   return div.innerHTML;
 }
 
-function getRelativeTime(dateStr) {
+/**
+ * Format transaction date — shows relative for today/yesterday,
+ * formatted date otherwise.
+ */
+function formatTransactionDate(dateStr) {
   const date = new Date(dateStr);
   const now = new Date();
-  const diffMs = now - date;
-  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  const dateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  const todayOnly = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const diffDays = Math.round((todayOnly - dateOnly) / (1000 * 60 * 60 * 24));
 
-  if (diffHours < 1) return 'Just now';
-  if (diffHours < 24) return `Today, ${date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`;
-  if (diffDays === 1) return `Yesterday, ${date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`;
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  if (diffDays === 0) {
+    return `Today • ${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+  }
+  if (diffDays === 1) {
+    return `Yesterday • ${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+  }
+  if (diffDays < 7) {
+    return `${diffDays} days ago • ${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+  }
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
 export default { initRender };
