@@ -5,6 +5,8 @@
  * ═══════════════════════════════════════════════════════
  */
 
+import { initAuth } from './auth.js';
+import { initRouter } from './router.js';
 import { initSidebar } from './sidebar.js';
 import { initMobile } from './mobile.js';
 import { initCharts } from './charts.js';
@@ -13,35 +15,63 @@ import { initForms } from './forms.js';
 import { initRender } from './render.js';
 
 /**
- * Boot sequence — order matters for dependency resolution.
+ * Full app initialization — called only after successful auth.
  */
-function boot() {
-  console.log('%c[VaultLedger]%c Initializing...', 'color: #00e676; font-weight: bold', 'color: inherit');
+function bootApp() {
+  console.log('%c[VaultLedger]%c Booting app modules...', 'color: #00e676; font-weight: bold', 'color: inherit');
 
-  // 1. Initialize Lucide icons
+  // 1. Initialize Lucide icons (for app layout)
   if (window.lucide) {
     window.lucide.createIcons();
   }
 
-  // 2. Sidebar navigation (desktop + mobile drawer content)
+  // 2. Router — must come before sidebar so active state is set
+  initRouter();
+
+  // 3. Sidebar navigation
   initSidebar();
 
-  // 3. Mobile-specific interactions (hamburger, drawer, FAB)
+  // 4. Mobile-specific interactions (hamburger, drawer, FAB)
   initMobile();
 
-  // 4. Chart.js spending chart + category progress bars
+  // 5. Chart.js spending chart + category progress bars
   initCharts();
 
-  // 5. Form validation for Quick Transaction modal
+  // 6. Form validation for Quick Transaction modal
   initForms();
 
-  // 6. DOM rendering (hero, transactions, mobile sections)
+  // 7. DOM rendering (hero, transactions, mobile sections)
   initRender();
 
-  // 7. Notification system (toasts + banners) — last, so DOM is ready
+  // 8. Notification system (toasts + banners) — last, so DOM is ready
   initNotifications();
 
   console.log('%c[VaultLedger]%c Ready.', 'color: #00e676; font-weight: bold', 'color: inherit');
+}
+
+/**
+ * Boot sequence — auth first, then app if authenticated.
+ */
+function boot() {
+  console.log('%c[VaultLedger]%c Initializing...', 'color: #00e676; font-weight: bold', 'color: inherit');
+
+  // 1. Initialize Lucide icons (for login page)
+  if (window.lucide) {
+    window.lucide.createIcons();
+  }
+
+  // 2. Auth check — shows login or app layout
+  const isAuthenticated = initAuth();
+
+  // 3. If already logged in, boot the full app immediately
+  if (isAuthenticated) {
+    bootApp();
+  }
+
+  // 4. Listen for auth success event (login form submit)
+  window.addEventListener('vault:authenticated', () => {
+    bootApp();
+  });
 }
 
 // ─── Launch ───
