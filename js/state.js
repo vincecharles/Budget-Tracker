@@ -273,6 +273,32 @@ class StateManager {
     return newCat;
   }
 
+  /**
+   * Delete a transaction and reverse its effect on category/budget totals.
+   */
+  deleteTransaction(id) {
+    const idx = this._state.transactions.findIndex(t => t.id === id);
+    if (idx === -1) return;
+
+    const txn = this._state.transactions[idx];
+
+    // Reverse category spent
+    if (txn.type === 'expense' && txn.category) {
+      const cat = this._state.categories.find(c => c.id === txn.category);
+      if (cat) {
+        cat.spent = Math.max(0, cat.spent - Math.abs(txn.amount));
+      }
+    }
+
+    // Reverse budget totals
+    if (txn.type === 'expense') {
+      this._state.budget.totalSpent = Math.max(0, this._state.budget.totalSpent - Math.abs(txn.amount));
+    }
+
+    this._state.transactions.splice(idx, 1);
+    this._notify();
+  }
+
   dismissNotification(id) {
     const notif = this._state.notifications.find(n => n.id === id);
     if (notif) {

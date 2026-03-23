@@ -89,7 +89,7 @@ function renderTransactionLog() {
     const showOverageAlert = index === 0 && appState.overageCategories.length > 0;
 
     let html = `
-      <div class="transaction-row animate-slide-up" style="animation-delay: ${index * 60}ms">
+      <div class="transaction-row group animate-slide-up" style="animation-delay: ${index * 60}ms">
         <div class="w-9 h-9 rounded-xl ${bgColor} flex items-center justify-center shrink-0">
           <i data-lucide="${txn.icon || (isExpense ? 'arrow-down-left' : 'arrow-up-right')}" class="w-4 h-4 ${iconColor}"></i>
         </div>
@@ -97,9 +97,13 @@ function renderTransactionLog() {
           <p class="text-sm font-medium text-vault-text truncate">${escapeHtml(txn.description)}</p>
           <p class="text-[11px] text-vault-muted mt-0.5">${dateDisplay}</p>
         </div>
-        <span class="text-sm font-semibold ${amountColor}">
+        <span class="text-sm font-semibold ${amountColor} mr-1">
           ${amountPrefix}${absAmount}
         </span>
+        <button type="button" data-delete-txn="${txn.id}" aria-label="Delete transaction"
+          class="p-1.5 rounded-lg text-vault-muted/0 group-hover:text-vault-muted hover:!text-rose-400 hover:bg-rose-500/10 transition-all shrink-0" title="Delete">
+          <i data-lucide="trash-2" class="w-3.5 h-3.5 pointer-events-none"></i>
+        </button>
       </div>
     `;
 
@@ -120,6 +124,17 @@ function renderTransactionLog() {
 
     return html;
   }).join('');
+
+  // Wire up delete buttons (event delegation)
+  container.querySelectorAll('[data-delete-txn]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const txnId = btn.getAttribute('data-delete-txn');
+      if (confirm('Delete this transaction?')) {
+        appState.deleteTransaction(txnId);
+      }
+    });
+  });
 
   if (window.lucide) window.lucide.createIcons({ nodes: [container] });
 }
