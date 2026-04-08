@@ -58,6 +58,9 @@ export function initForms() {
   // ─── Category Modal ───
   initCategoryModal();
 
+  // ─── Income Modal ───
+  initIncomeModal();
+
   // ─── Listen for edit events from render.js ───
   window.addEventListener('vault:editTransaction', (e) => {
     const txnId = e.detail?.txnId;
@@ -398,6 +401,47 @@ function sanitizeText(text) {
 
 function formatDate(isoStr) {
   return new Date(isoStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+// ─── Income Modal ───
+
+function initIncomeModal() {
+  const modal = document.getElementById('income-modal');
+  const form = document.getElementById('income-form');
+  const closeBtn = document.getElementById('income-modal-close');
+  const backdrop = document.getElementById('income-modal-backdrop');
+
+  const openBtn = document.getElementById('edit-income-btn');
+  const mobileOpenBtn = document.getElementById('mobile-edit-income-btn');
+
+  const openModal = () => {
+    if (!modal) return;
+    const input = document.getElementById('inc-amount');
+    if (input) input.value = appState.budget.totalIncome;
+    modal.classList.add('modal-active');
+    document.body.style.overflow = 'hidden';
+    setTimeout(() => input?.focus(), 150);
+  };
+
+  const closeModal = () => {
+    if (!modal) return;
+    modal.classList.remove('modal-active');
+    document.body.style.overflow = '';
+  };
+
+  if (openBtn) openBtn.addEventListener('click', openModal);
+  if (mobileOpenBtn) mobileOpenBtn.addEventListener('click', openModal);
+  if (closeBtn) closeBtn.addEventListener('click', closeModal);
+  if (backdrop) backdrop.addEventListener('click', closeModal);
+
+  if (form) {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const amount = parseFloat(document.getElementById('inc-amount')?.value) || 0;
+      appState.updateIncome(amount);
+      closeModal();
+    });
+  }
 }
 
 export default { initForms };

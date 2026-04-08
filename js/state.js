@@ -332,6 +332,16 @@ class StateManager {
   }
 
   /**
+   * Update the total monthly income (Safe to Spend basis).
+   */
+  updateIncome(amount) {
+    this._state.budget.totalIncome = amount;
+    this._state.budget.monthlyTotal = amount;
+    this._checkOverages();
+    this._notify();
+  }
+
+  /**
    * Update a category's name and/or budget.
    */
   updateCategory(id, updates) {
