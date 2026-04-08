@@ -1,11 +1,11 @@
 /**
  * ═══════════════════════════════════════════════════════
  * ROUTER.JS — Lightweight Hash-Based SPA Router
- * Route protection via onboarding check.
+ * Route protection via login + onboarding check.
  * ═══════════════════════════════════════════════════════
  */
 
-import { isOnboarded, resetOnboarding } from './auth.js';
+import { isLoggedIn, isOnboarded, logout, resetOnboarding } from './auth.js';
 import appState from './state.js';
 
 const ROUTES = ['dashboard', 'expenses', 'investments', 'transactions'];
@@ -45,11 +45,13 @@ export function initRouter() {
 
 function navigate() {
   // Route protection
-  if (!isOnboarded()) {
-    const onboardView = document.getElementById('login-view');
+  if (!isLoggedIn() || !isOnboarded()) {
+    const loginView = document.getElementById('login-view');
     const appLayout = document.getElementById('app-layout');
-    if (onboardView) onboardView.classList.remove('hidden');
-    if (appLayout) appLayout.classList.add('hidden');
+    if (!isLoggedIn()) {
+      if (loginView) loginView.classList.remove('hidden');
+      if (appLayout) appLayout.classList.add('hidden');
+    }
     return;
   }
 
@@ -109,15 +111,24 @@ function closeMobileDrawer() {
 }
 
 function handleLogout() {
+  if (!confirm('Sign out and reset all data?')) return;
+
+  logout();
   resetOnboarding();
   appState.resetToDefaults();
-  // Clear app state from localStorage completely
   localStorage.removeItem('vaultLedgerState');
-  const onboardView = document.getElementById('login-view');
+
+  const loginView = document.getElementById('login-view');
+  const onboardingView = document.getElementById('onboarding-view');
   const appLayout = document.getElementById('app-layout');
+
   if (appLayout) appLayout.classList.add('hidden');
-  if (onboardView) {
-    onboardView.classList.remove('hidden', 'login-exit');
+  if (onboardingView) onboardingView.classList.add('hidden');
+  if (loginView) {
+    loginView.classList.remove('hidden', 'login-exit');
+    // Clear login form
+    const form = document.getElementById('login-form');
+    if (form) form.reset();
   }
   window.location.hash = '';
 }

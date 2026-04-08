@@ -1,6 +1,6 @@
 /**
  * ═══════════════════════════════════════════════════════
- * CHARTS.JS — Spending Chart + Category Bars
+ * CHARTS.JS — Spending Chart + Category Bars + Expense Pie
  * Handles empty-state gracefully.
  * ═══════════════════════════════════════════════════════
  */
@@ -8,18 +8,21 @@
 import appState from './state.js';
 
 let spendingChart = null;
+let expensePieChart = null;
 
 export function initCharts() {
   renderSpendingChart();
   renderCategoryBars();
+  renderExpensePieChart();
 
   appState.subscribe(() => {
     updateSpendingChart();
     renderCategoryBars();
+    updateExpensePieChart();
   });
 }
 
-// ─── Doughnut Chart ───
+// ─── Doughnut Chart (Dashboard Hero) ───
 
 function renderSpendingChart() {
   const canvas = document.getElementById('spending-chart');
@@ -96,7 +99,72 @@ function updateChartLabels(pct) {
   }
 }
 
-// ─── Category Progress Bars ───
+// ─── Expense Pie Chart (Expenses View) ───
+
+function renderExpensePieChart() {
+  const canvas = document.getElementById('expense-pie-chart');
+  if (!canvas) return;
+
+  const ctx = canvas.getContext('2d');
+  const cats = appState.categories.filter(c => c.spent > 0);
+
+  const data = cats.length > 0
+    ? { labels: cats.map(c => c.name), datasets: [{ data: cats.map(c => c.spent), backgroundColor: cats.map(c => c.color), borderWidth: 0, borderRadius: 4, spacing: 2 }] }
+    : { labels: ['No data'], datasets: [{ data: [1], backgroundColor: ['rgba(244, 114, 182, 0.1)'], borderWidth: 0 }] };
+
+  expensePieChart = new Chart(ctx, {
+    type: 'doughnut',
+    data,
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      cutout: '65%',
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#1e1220',
+          titleColor: '#f5e8f0',
+          bodyColor: '#a0899a',
+          borderColor: '#3a2035',
+          borderWidth: 1,
+          cornerRadius: 12,
+          padding: 12,
+          callbacks: {
+            label: function(ctx) {
+              const val = ctx.parsed;
+              return ` ₱${val.toLocaleString('en-PH', { minimumFractionDigits: 2 })}`;
+            }
+          }
+        },
+      },
+      animation: {
+        animateRotate: true,
+        duration: 1000,
+        easing: 'easeOutQuart',
+      },
+    },
+  });
+}
+
+function updateExpensePieChart() {
+  if (!expensePieChart) return;
+
+  const cats = appState.categories.filter(c => c.spent > 0);
+
+  if (cats.length > 0) {
+    expensePieChart.data.labels = cats.map(c => c.name);
+    expensePieChart.data.datasets[0].data = cats.map(c => c.spent);
+    expensePieChart.data.datasets[0].backgroundColor = cats.map(c => c.color);
+  } else {
+    expensePieChart.data.labels = ['No data'];
+    expensePieChart.data.datasets[0].data = [1];
+    expensePieChart.data.datasets[0].backgroundColor = ['rgba(244, 114, 182, 0.1)'];
+  }
+
+  expensePieChart.update();
+}
+
+// ─── Category Progress Bars (Dashboard) ───
 
 function renderCategoryBars() {
   const container = document.getElementById('category-health-bars');

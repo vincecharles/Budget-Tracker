@@ -19,6 +19,8 @@ let isSwiping = false;
  * Initialize mobile interactions.
  */
 export function initMobile() {
+  // Expose openTransactionModal for other modules
+  window.__vaultMobile = { openTransactionModal };
   hamburgerBtn = document.getElementById('hamburger-btn');
   drawerCloseBtn = document.getElementById('drawer-close-btn');
   mobileDrawer = document.getElementById('mobile-drawer');

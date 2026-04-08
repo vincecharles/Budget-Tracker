@@ -1,15 +1,25 @@
 /**
  * ═══════════════════════════════════════════════════════
- * AUTH.JS — Onboarding Flow (replaces Login)
- * No backend needed — localStorage-backed first-run setup.
+ * AUTH.JS — Login System (Hardcoded Credentials)
+ * User: Erika / Pass: Faye
+ * localStorage-backed session persistence.
  * ═══════════════════════════════════════════════════════
  */
 
 import appState from './state.js';
 
+const SESSION_KEY = 'vaultLedger_session';
 const ONBOARDED_KEY = 'vaultLedger_onboarded';
 
+// ─── Hardcoded Credentials ───
+const VALID_USER = 'Erika';
+const VALID_PASS = 'Faye';
+
 // ─── Public API ───
+
+export function isLoggedIn() {
+  return localStorage.getItem(SESSION_KEY) === 'true';
+}
 
 export function isOnboarded() {
   return localStorage.getItem(ONBOARDED_KEY) === 'true';
@@ -23,64 +33,159 @@ export function resetOnboarding() {
   localStorage.removeItem(ONBOARDED_KEY);
 }
 
+function setSession(val) {
+  localStorage.setItem(SESSION_KEY, val ? 'true' : '');
+}
+
+export function logout() {
+  localStorage.removeItem(SESSION_KEY);
+}
+
 /**
- * Initialize onboarding — wire up the wizard steps.
- * Returns true if user has already completed onboarding.
+ * Initialize auth — wire up login form + onboarding wizard.
+ * Returns true if user is already fully authenticated + onboarded.
  */
 export function initAuth() {
-  const onboardingView = document.getElementById('login-view');
+  const loginView = document.getElementById('login-view');
+  const onboardingView = document.getElementById('onboarding-view');
   const appLayout = document.getElementById('app-layout');
 
-  if (!onboardingView || !appLayout) {
-    console.warn('[Auth] Missing onboarding or app-layout elements.');
+  if (!loginView || !appLayout) {
+    console.warn('[Auth] Missing login or app-layout elements.');
     return true;
   }
 
-  // ─── Wire up wizard navigation ───
-  setupWizard(onboardingView, appLayout);
+  // ─── Wire up login form ───
+  setupLoginForm(loginView, onboardingView, appLayout);
 
-  // ─── Check if already onboarded ───
-  if (isOnboarded()) {
-    onboardingView.classList.add('hidden');
-    appLayout.classList.remove('hidden');
-    return true;
+  // ─── Wire up onboarding wizard ───
+  if (onboardingView) {
+    setupWizard(onboardingView, appLayout);
+  }
+
+  // ─── Check session state ───
+  if (isLoggedIn()) {
+    loginView.classList.add('hidden');
+
+    if (isOnboarded()) {
+      // Fully authenticated + onboarded → show app
+      if (onboardingView) onboardingView.classList.add('hidden');
+      appLayout.classList.remove('hidden');
+      return true;
+    } else {
+      // Logged in but not onboarded → show wizard
+      if (onboardingView) {
+        onboardingView.classList.remove('hidden');
+      }
+      appLayout.classList.add('hidden');
+      return false;
+    }
   } else {
-    onboardingView.classList.remove('hidden');
+    // Not logged in → show login
+    loginView.classList.remove('hidden');
+    if (onboardingView) onboardingView.classList.add('hidden');
     appLayout.classList.add('hidden');
     return false;
   }
 }
 
 /**
- * Set up the 3-step wizard with slide animations.
+ * Set up the login form with credential validation.
+ */
+function setupLoginForm(loginView, onboardingView, appLayout) {
+  const form = document.getElementById('login-form');
+  const userInput = document.getElementById('login-username');
+  const passInput = document.getElementById('login-password');
+  const errorMsg = document.getElementById('login-error');
+  const submitBtn = document.getElementById('login-submit');
+
+  if (!form) return;
+
+  // Clear errors on focus
+  [userInput, passInput].forEach(input => {
+    input?.addEventListener('focus', () => {
+      input.classList.remove('input-error');
+      if (errorMsg) {
+        errorMsg.textContent = '';
+        errorMsg.classList.add('hidden');
+      }
+    });
+  });
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const username = userInput?.value?.trim();
+    const password = passInput?.value?.trim();
+
+    // Validate
+    if (!username || !password) {
+      showLoginError(errorMsg, 'Please enter both username and password.');
+      if (!username) userInput?.classList.add('input-error');
+      if (!password) passInput?.classList.add('input-error');
+      return;
+    }
+
+    // Check credentials (case-sensitive)
+    if (username === VALID_USER && password === VALID_PASS) {
+      // ─── Login Success ───
+      setSession(true);
+
+      // Set user name in state
+      if (!appState.user.name || appState.user.name === '') {
+        appState._state.user.name = VALID_USER;
+        appState._state.user.id = `usr_${Date.now()}`;
+      }
+
+      // Animate out login
+      loginView.classList.add('login-exit');
+      setTimeout(() => {
+        loginView.classList.add('hidden');
+        loginView.classList.remove('login-exit');
+
+        if (isOnboarded()) {
+          // Already onboarded → go straight to app
+          if (onboardingView) onboardingView.classList.add('hidden');
+          appLayout.classList.remove('hidden');
+          window.dispatchEvent(new CustomEvent('vault:authenticated'));
+        } else {
+          // First login → show onboarding wizard
+          if (onboardingView) {
+            onboardingView.classList.remove('hidden');
+          }
+        }
+      }, 400);
+    } else {
+      // ─── Login Failed ───
+      showLoginError(errorMsg, 'Invalid username or password 💔');
+      userInput?.classList.add('input-error');
+      passInput?.classList.add('input-error');
+
+      // Shake the form
+      form.style.animation = 'inputShake 0.3s ease-in-out';
+      setTimeout(() => { form.style.animation = ''; }, 300);
+    }
+  });
+}
+
+function showLoginError(el, msg) {
+  if (el) {
+    el.textContent = msg;
+    el.classList.remove('hidden');
+  }
+}
+
+/**
+ * Set up the 2-step onboarding wizard (income + budgets).
  */
 function setupWizard(onboardingView, appLayout) {
   const steps = onboardingView.querySelectorAll('[data-step]');
   const dots = onboardingView.querySelectorAll('[data-dot]');
-  let currentStep = 1;
 
-  // Step 1 → Step 2
+  // Step 1 (Income) → Step 2 (Budgets)
   const step1Next = document.getElementById('step1-next');
   if (step1Next) {
     step1Next.addEventListener('click', () => {
-      const nameInput = document.getElementById('onboard-name');
-      const name = nameInput?.value?.trim();
-      if (!name) {
-        nameInput?.classList.add('input-error');
-        nameInput?.focus();
-        return;
-      }
-      nameInput?.classList.remove('input-error');
-      goToStep(2, steps, dots);
-      currentStep = 2;
-    });
-  }
-
-  // Step 2 → Step 3
-  const step2Next = document.getElementById('step2-next');
-  const step2Back = document.getElementById('step2-back');
-  if (step2Next) {
-    step2Next.addEventListener('click', () => {
       const incomeInput = document.getElementById('onboard-income');
       const income = parseFloat(incomeInput?.value);
       if (!income || income <= 0) {
@@ -89,40 +194,30 @@ function setupWizard(onboardingView, appLayout) {
         return;
       }
       incomeInput?.classList.remove('input-error');
-      // Pre-fill suggested budgets (percentage-based)
       prefillBudgets(income);
-      goToStep(3, steps, dots);
-      currentStep = 3;
+      goToStep(2, steps, dots);
     });
   }
+
+  // Step 2 Back
+  const step2Back = document.getElementById('step2-back');
   if (step2Back) {
     step2Back.addEventListener('click', () => {
       goToStep(1, steps, dots);
-      currentStep = 1;
     });
   }
 
-  // Step 3 → Complete
-  const step3Done = document.getElementById('step3-done');
-  const step3Back = document.getElementById('step3-back');
-  if (step3Done) {
-    step3Done.addEventListener('click', () => {
+  // Step 2 Done
+  const step2Done = document.getElementById('step2-done');
+  if (step2Done) {
+    step2Done.addEventListener('click', () => {
       finishOnboarding(onboardingView, appLayout);
     });
   }
-  if (step3Back) {
-    step3Back.addEventListener('click', () => {
-      goToStep(2, steps, dots);
-      currentStep = 2;
-    });
-  }
 
-  // Enter key support on inputs
-  document.getElementById('onboard-name')?.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') { e.preventDefault(); step1Next?.click(); }
-  });
+  // Enter key on income input
   document.getElementById('onboard-income')?.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') { e.preventDefault(); step2Next?.click(); }
+    if (e.key === 'Enter') { e.preventDefault(); step1Next?.click(); }
   });
 }
 
@@ -140,7 +235,7 @@ function goToStep(stepNum, steps, dots) {
       s.style.animation = '';
     }
   });
-  dots.forEach(d => {
+  dots?.forEach(d => {
     const dNum = parseInt(d.getAttribute('data-dot'));
     if (dNum === stepNum) {
       d.classList.add('bg-pink-400', 'scale-125');
@@ -180,7 +275,6 @@ function prefillBudgets(income) {
  * Finish onboarding — save data and transition to app.
  */
 function finishOnboarding(onboardingView, appLayout) {
-  const name = document.getElementById('onboard-name')?.value?.trim() || 'User';
   const income = parseFloat(document.getElementById('onboard-income')?.value) || 0;
 
   // Gather category budgets
@@ -193,7 +287,7 @@ function finishOnboarding(onboardingView, appLayout) {
   });
 
   // Save to state
-  appState.completeOnboarding({ name, monthlyIncome: income, categoryBudgets });
+  appState.completeOnboarding({ name: VALID_USER, monthlyIncome: income, categoryBudgets });
   completeOnboarding();
 
   // Animate transition
@@ -205,4 +299,4 @@ function finishOnboarding(onboardingView, appLayout) {
   }, 400);
 }
 
-export default { isOnboarded, completeOnboarding, resetOnboarding, initAuth };
+export default { isLoggedIn, isOnboarded, completeOnboarding, resetOnboarding, logout, initAuth };
