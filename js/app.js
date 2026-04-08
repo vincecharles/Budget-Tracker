@@ -13,12 +13,16 @@ import { initCharts } from './charts.js';
 import { initNotifications } from './notifications.js';
 import { initForms } from './forms.js';
 import { initRender } from './render.js';
+import appState from './state.js';
 
 /**
  * Full app initialization — called only after successful auth.
  */
 function bootApp() {
   console.log('%c[VaultLedger]%c Booting app modules...', 'color: #00e676; font-weight: bold', 'color: inherit');
+
+  // Sync with cloud
+  appState.init();
 
   // 1. Initialize Lucide icons (for app layout)
   if (window.lucide) {

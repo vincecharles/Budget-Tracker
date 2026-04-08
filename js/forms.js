@@ -167,7 +167,7 @@ function resetToCreateMode() {
 /**
  * Handle form submission — Create or Update.
  */
-function handleFormSubmit(e) {
+async function handleFormSubmit(e) {
   e.preventDefault();
   const form = e.target;
   const errors = [];
@@ -223,10 +223,10 @@ function handleFormSubmit(e) {
 
   if (editingTxnId) {
     // ─── UPDATE MODE ───
-    appState.updateTransaction(editingTxnId, txnData);
+    await appState.updateTransaction(editingTxnId, txnData);
   } else {
     // ─── CREATE MODE ───
-    appState.addTransaction(txnData);
+    await appState.addTransaction(txnData);
   }
 
   // Reset
@@ -280,7 +280,7 @@ function initCategoryModal() {
     if (e.key === 'Escape' && modal.classList.contains('modal-active')) close();
   });
 
-  form.addEventListener('submit', (e) => {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
     const nameInput = form.querySelector('#cat-name');
@@ -305,7 +305,7 @@ function initCategoryModal() {
         showFieldError('cat-name', 'Category name already exists!');
         return;
       }
-      appState.updateCategory(editingCatId, { name: nameVal, budgeted: budgetVal });
+      await appState.updateCategory(editingCatId, { name: nameVal, budgeted: budgetVal });
     } else {
       // ─── CREATE MODE ───
       const exists = appState.categories.some(c => c.name.toLowerCase() === nameVal.toLowerCase());
@@ -314,7 +314,7 @@ function initCategoryModal() {
         showFieldError('cat-name', 'Category already exists!');
         return;
       }
-      appState.addCategory(nameVal, budgetVal);
+      await appState.addCategory(nameVal, budgetVal);
     }
 
     form.reset();
@@ -435,10 +435,10 @@ function initIncomeModal() {
   if (backdrop) backdrop.addEventListener('click', closeModal);
 
   if (form) {
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const amount = parseFloat(document.getElementById('inc-amount')?.value) || 0;
-      appState.updateIncome(amount);
+      await appState.updateIncome(amount);
       closeModal();
     });
   }
