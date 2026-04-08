@@ -147,9 +147,17 @@ class StateManager {
   // ─── Computed ───
 
   get safeToSpend() {
-    const { totalIncome, pendingBills, savingsGoal } = this._state.budget;
-    const totalSpent = this._state.categories.reduce((sum, c) => sum + c.spent, 0);
-    return Math.max(0, totalIncome - totalSpent - pendingBills - savingsGoal);
+    let extraIncomeThisMonth = 0;
+    const current = this._getPHTDateDetails(new Date());
+    this._state.transactions.forEach(t => {
+       if (t.type === 'income') {
+           const d = this._getPHTDateDetails(t.date);
+           if (d.year === current.year && d.month === current.month) extraIncomeThisMonth += Math.abs(t.amount);
+       }
+    });
+
+    const { totalIncome, pendingBills, savingsGoal, totalSpent } = this._state.budget;
+    return Math.max(0, (totalIncome + extraIncomeThisMonth) - totalSpent - pendingBills - savingsGoal);
   }
 
   get spentPercentage() {
@@ -214,23 +222,6 @@ class StateManager {
     };
 
     this._state.transactions.unshift(newTxn);
-
-    // Update category spent
-    if (txn.type === 'expense' && txn.category) {
-      const cat = this._state.categories.find(c => c.id === txn.category);
-      if (cat) {
-        cat.spent += Math.abs(txn.amount);
-      }
-    }
-
-    // Update budget totals
-    if (txn.type === 'expense') {
-      this._state.budget.totalSpent += Math.abs(txn.amount);
-    } else {
-      this._state.budget.totalIncome += Math.abs(txn.amount);
-    }
-
-    this._checkOverages();
     this._notify();
   }
 
@@ -274,60 +265,22 @@ class StateManager {
   }
 
   /**
-   * Delete a transaction and reverse its effect on category/budget totals.
+   * Delete a transaction from array.
    */
   deleteTransaction(id) {
     const idx = this._state.transactions.findIndex(t => t.id === id);
     if (idx === -1) return;
-
-    const txn = this._state.transactions[idx];
-
-    // Reverse category spent
-    if (txn.type === 'expense' && txn.category) {
-      const cat = this._state.categories.find(c => c.id === txn.category);
-      if (cat) {
-        cat.spent = Math.max(0, cat.spent - Math.abs(txn.amount));
-      }
-    }
-
-    // Reverse budget totals
-    if (txn.type === 'expense') {
-      this._state.budget.totalSpent = Math.max(0, this._state.budget.totalSpent - Math.abs(txn.amount));
-    }
-
     this._state.transactions.splice(idx, 1);
     this._notify();
   }
 
   /**
-   * Update an existing transaction. Reverses old amounts, applies new.
+   * Update an existing transaction.
    */
   updateTransaction(id, updates) {
     const txn = this._state.transactions.find(t => t.id === id);
     if (!txn) return;
-
-    // Reverse old effect
-    if (txn.type === 'expense' && txn.category) {
-      const oldCat = this._state.categories.find(c => c.id === txn.category);
-      if (oldCat) oldCat.spent = Math.max(0, oldCat.spent - Math.abs(txn.amount));
-    }
-    if (txn.type === 'expense') {
-      this._state.budget.totalSpent = Math.max(0, this._state.budget.totalSpent - Math.abs(txn.amount));
-    }
-
-    // Apply updates
     Object.assign(txn, updates);
-
-    // Apply new effect
-    if (txn.type === 'expense' && txn.category) {
-      const newCat = this._state.categories.find(c => c.id === txn.category);
-      if (newCat) newCat.spent += Math.abs(txn.amount);
-    }
-    if (txn.type === 'expense') {
-      this._state.budget.totalSpent += Math.abs(txn.amount);
-    }
-
-    this._checkOverages();
     this._notify();
   }
 
@@ -412,6 +365,50 @@ class StateManager {
     }
   }
 
+  // ─── Time Based Computing ───
+
+  _getPHTDateDetails(dateSpan) {
+    const parts = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'Asia/Manila',
+      year: 'numeric', month: 'numeric'
+    }).formatToParts(new Date(dateSpan || new Date()));
+    const dt = {};
+    parts.forEach(p => dt[p.type] = p.value);
+    return { year: parseInt(dt.year), month: parseInt(dt.month) - 1 };
+  }
+
+  _recomputeMonthlySpends() {
+    const current = this._getPHTDateDetails(new Date());
+
+    this._state.categories.forEach(c => c.spent = 0);
+    this._state.budget.totalSpent = 0;
+
+    let lastMonthYear = current.month === 0 ? current.year - 1 : current.year;
+    let lastMonthIdx = current.month === 0 ? 11 : current.month - 1;
+    let lastMonthSpent = 0;
+
+    this._state.transactions.forEach(t => {
+      const d = this._getPHTDateDetails(t.date);
+
+      if (d.year === current.year && d.month === current.month) {
+        if (t.type === 'expense') {
+          this._state.budget.totalSpent += Math.abs(t.amount);
+          const cat = this._state.categories.find(c => c.id === t.category);
+          if (cat) cat.spent += Math.abs(t.amount);
+        }
+      }
+
+      if (d.year === lastMonthYear && d.month === lastMonthIdx) {
+        if (t.type === 'expense') {
+           lastMonthSpent += Math.abs(t.amount);
+        }
+      }
+    });
+
+    this._state.lastMonthSpent = lastMonthSpent;
+    this._checkOverages();
+  }
+
   // ─── Pub/Sub ───
 
   subscribe(callback) {
@@ -422,6 +419,7 @@ class StateManager {
   }
 
   _notify() {
+    this._recomputeMonthlySpends();
     this._saveState();
     for (const cb of this._subscribers) {
       try { cb(this._state); } catch (e) {

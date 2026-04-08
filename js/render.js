@@ -73,6 +73,7 @@ function renderAll() {
   renderExpensesView();
   renderSavingsView();
   renderFullTransactionList();
+  renderLastMonthTrend();
 }
 
 // ─── User Greeting ───
@@ -81,6 +82,23 @@ function renderUserGreeting() {
   const el = document.getElementById('user-greeting');
   if (el && appState.user.name) {
     el.textContent = `Hi, ${appState.user.name} ✨`;
+  }
+}
+
+// ─── Last Month Trend ───
+
+function renderLastMonthTrend() {
+  const lbl = document.getElementById('last-month-label');
+  const spent = document.getElementById('last-month-spent');
+  if (lbl && spent) {
+    const tmpDate = new Date();
+    // format as Philippine Time roughly
+    const phtDateStr = tmpDate.toLocaleString('en-US', { timeZone: 'Asia/Manila' });
+    const current = new Date(phtDateStr);
+    const lastMonth = new Date(current.getFullYear(), current.getMonth() - 1, 1);
+    
+    lbl.textContent = lastMonth.toLocaleString('en-US', { month: 'long', year: 'numeric' });
+    spent.textContent = formatPHP(appState.state.lastMonthSpent || 0);
   }
 }
 
