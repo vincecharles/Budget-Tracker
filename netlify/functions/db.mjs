@@ -1,6 +1,6 @@
 import { neon } from '@neondatabase/serverless';
 
-const sql = neon(process.env.DATABASE_URL);
+const sql = neon(process.env.DATABASE_URL || process.env.NETLIFY_DATABASE_URL);
 
 export async function dbQuery(strings, ...values) {
   try {
