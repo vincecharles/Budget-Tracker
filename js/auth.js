@@ -111,6 +111,11 @@ function setupLoginForm(loginView, onboardingView, appLayout) {
         appState._state.user.name = data.user.username;
         appState._state.user.id = data.user.id;
 
+        // Auto-skip onboarding if they already have data in the cloud!
+        if (parseFloat(data.user.total_income) > 0) {
+          completeOnboarding();
+        }
+
         loginView.classList.add('login-exit');
         setTimeout(() => {
           loginView.classList.add('hidden');
