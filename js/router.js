@@ -8,7 +8,7 @@
 import { isLoggedIn, isOnboarded, logout, resetOnboarding } from './auth.js';
 import appState from './state.js';
 
-const ROUTES = ['dashboard', 'expenses', 'investments', 'transactions'];
+const ROUTES = ['dashboard', 'expenses', 'investments', 'transactions', 'shopping'];
 const DEFAULT_ROUTE = 'dashboard';
 
 let views = {};

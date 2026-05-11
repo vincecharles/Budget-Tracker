@@ -2,7 +2,9 @@ import sql from './db.mjs';
 
 export const handler = async (event) => {
   const method = event.httpMethod;
-  const userId = 'usr_erika1'; // Hardcoded for now per project simplified requirements
+  const authHeader = event.headers.authorization || event.headers.Authorization || '';
+  const tokenMatch = authHeader.match(/Bearer session_([a-zA-Z0-9]+)_/);
+  const userId = tokenMatch ? tokenMatch[1] : 'usr_erika1';
 
   try {
     if (method === 'GET') {

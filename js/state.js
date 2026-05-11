@@ -41,7 +41,7 @@ class StateManager {
   }
 
   async fetchProfile() {
-    const res = await fetch(`${API_BASE}/profile`);
+    const res = await fetch(`${API_BASE}/profile`, { headers: this._getHeaders() });
     const data = await res.json();
     this._state.budget.totalIncome = parseFloat(data.total_income) || 0;
     this._state.budget.monthlyTotal = parseFloat(data.monthly_total) || 0;
@@ -49,7 +49,7 @@ class StateManager {
   }
 
   async fetchCategories() {
-    const res = await fetch(`${API_BASE}/categories`);
+    const res = await fetch(`${API_BASE}/categories`, { headers: this._getHeaders() });
     const data = await res.json();
     this._state.categories = data.map(c => ({
       id: c.id,
@@ -63,7 +63,7 @@ class StateManager {
   }
 
   async fetchTransactions() {
-    const res = await fetch(`${API_BASE}/transactions`);
+    const res = await fetch(`${API_BASE}/transactions`, { headers: this._getHeaders() });
     const data = await res.json();
     this._state.transactions = data.map(t => ({
       id: t.id,
@@ -137,6 +137,7 @@ class StateManager {
     // Sync to cloud
     await fetch(`${API_BASE}/transactions`, {
       method: 'POST',
+      headers: this._getHeaders(),
       body: JSON.stringify({
         id: newTxn.id,
         type: newTxn.type,
@@ -157,6 +158,7 @@ class StateManager {
 
     await fetch(`${API_BASE}/transactions`, {
       method: 'DELETE',
+      headers: this._getHeaders(),
       body: JSON.stringify({ id })
     });
   }
@@ -169,6 +171,7 @@ class StateManager {
 
     await fetch(`${API_BASE}/transactions`, {
       method: 'PUT',
+      headers: this._getHeaders(),
       body: JSON.stringify({
         id,
         type: txn.type,
@@ -194,6 +197,7 @@ class StateManager {
 
     await fetch(`${API_BASE}/categories`, {
       method: 'POST',
+      headers: this._getHeaders(),
       body: JSON.stringify({ id, name: newCat.name, icon, color, budgeted: newCat.budgeted })
     });
 
@@ -209,6 +213,7 @@ class StateManager {
 
     await fetch(`${API_BASE}/categories`, {
       method: 'PUT',
+      headers: this._getHeaders(),
       body: JSON.stringify({ id, name: cat.name, budgeted: cat.budgeted })
     });
   }
@@ -222,6 +227,7 @@ class StateManager {
 
     await fetch(`${API_BASE}/categories`, {
       method: 'DELETE',
+      headers: this._getHeaders(),
       body: JSON.stringify({ id })
     });
   }
@@ -233,11 +239,19 @@ class StateManager {
 
     await fetch(`${API_BASE}/profile`, {
       method: 'PUT',
+      headers: this._getHeaders(),
       body: JSON.stringify({ total_income: amount, monthly_total: amount })
     });
   }
 
   // ─── Helpers ───
+
+  _getHeaders() {
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${localStorage.getItem('vaultLedger_session') || ''}`
+    };
+  }
 
   _getPHTDateDetails(dateSpan) {
     const parts = new Intl.DateTimeFormat('en-US', {

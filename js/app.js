@@ -13,6 +13,7 @@ import { initCharts } from './charts.js';
 import { initNotifications } from './notifications.js';
 import { initForms } from './forms.js';
 import { initRender } from './render.js';
+import { initShopping } from './shopping.js';
 import appState from './state.js';
 
 /**
@@ -49,6 +50,9 @@ function bootApp() {
 
   // 8. Notification system (toasts + banners) — last, so DOM is ready
   initNotifications();
+
+  // 9. Shopping list
+  initShopping();
 
   console.log('%c[VaultLedger]%c Ready.', 'color: #00e676; font-weight: bold', 'color: inherit');
 }

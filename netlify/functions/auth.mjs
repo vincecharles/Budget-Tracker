@@ -19,7 +19,7 @@ export const handler = async (event) => {
     const users = await sql`
       SELECT id, username, total_income, monthly_total 
       FROM users 
-      WHERE username = ${username} AND password = ${password}
+      WHERE LOWER(username) = LOWER(${username}) AND password = ${password}
     `;
 
     if (users.length === 0) {

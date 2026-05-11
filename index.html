@@ -326,6 +326,11 @@
         <span class="flex-1 text-left">Transactions</span>
       </a>
 
+      <a href="#/shopping" data-route="shopping" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-vault-text hover:bg-vault-card transition-colors group">
+        <i data-lucide="shopping-cart" class="w-4 h-4 text-vault-muted group-hover:text-pink-400 transition-colors"></i>
+        <span class="flex-1 text-left">Shopping List</span>
+      </a>
+
       <div class="border-t border-vault-border my-3" role="separator"></div>
 
       <a href="#" id="export-excel-btn" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-vault-muted hover:text-emerald-400 hover:bg-vault-card transition-colors">
@@ -673,6 +678,90 @@
 
         <!-- Transaction Count -->
         <p class="text-center text-xs text-vault-muted" id="txn-count-label">0 transactions</p>
+      </div>
+    </div>
+
+    <!-- ═══════ SHOPPING LIST VIEW ═══════ -->
+    <div data-view="shopping" class="hidden">
+      <div class="p-4 md:p-6 space-y-5">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-pink-500/10 flex items-center justify-center">
+              <i data-lucide="shopping-cart" class="w-5 h-5 text-pink-400"></i>
+            </div>
+            <div>
+              <h2 class="text-xl font-heading text-vault-text">Shopping List 🛒</h2>
+              <p class="text-xs text-vault-muted">Manage your groceries and sync to tracker</p>
+            </div>
+          </div>
+          <button type="button" id="shop-log-expense-btn"
+            class="hidden md:flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-pink-500 to-purple-500 text-white font-semibold text-xs rounded-xl hover:from-pink-400 hover:to-purple-400 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+            <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>
+            Log Checked as Expense
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <!-- Add Item Form -->
+          <div class="md:col-span-1 bg-vault-surface border border-vault-border rounded-2xl p-5 self-start">
+            <h3 class="text-sm font-semibold text-vault-text mb-4">Add Item ✨</h3>
+            <form id="shopping-form" class="space-y-4">
+              <div>
+                <label for="shop-item-name" class="block text-xs font-medium text-vault-muted mb-1.5">Item Name</label>
+                <input type="text" id="shop-item-name" required placeholder="e.g. Milk"
+                  class="w-full px-4 py-3 bg-vault-card border border-vault-border rounded-xl text-sm text-vault-text placeholder-vault-muted/50 focus:outline-none focus:border-pink-400 focus:ring-1 focus:ring-pink-400/30 transition-colors" />
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label for="shop-item-qty" class="block text-xs font-medium text-vault-muted mb-1.5">Qty</label>
+                  <input type="number" id="shop-item-qty" min="1" value="1" required
+                    class="w-full px-4 py-3 bg-vault-card border border-vault-border rounded-xl text-sm text-vault-text focus:outline-none focus:border-pink-400 focus:ring-1 focus:ring-pink-400/30 transition-colors" />
+                </div>
+                <div>
+                  <label for="shop-item-price" class="block text-xs font-medium text-vault-muted mb-1.5">Est. Price (₱)</label>
+                  <input type="number" id="shop-item-price" min="0" step="0.01" placeholder="0.00"
+                    class="w-full px-4 py-3 bg-vault-card border border-vault-border rounded-xl text-sm text-vault-text focus:outline-none focus:border-pink-400 focus:ring-1 focus:ring-pink-400/30 transition-colors" />
+                </div>
+              </div>
+              <button type="submit"
+                class="w-full py-3 bg-vault-card border border-pink-500/30 text-pink-400 font-bold text-sm rounded-xl hover:bg-pink-500/10 hover:border-pink-400 transition-all">
+                Add to List
+              </button>
+            </form>
+          </div>
+
+          <!-- Items List -->
+          <div class="md:col-span-2 space-y-5">
+            <!-- Active Items -->
+            <div class="bg-vault-surface border border-vault-border rounded-2xl p-5">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="text-sm font-semibold text-vault-text">To Buy 📋</h3>
+                <span id="shop-active-total" class="text-xs font-bold text-vault-muted">Est: ₱0.00</span>
+              </div>
+              <div id="shop-active-list" class="space-y-2">
+                <!-- Rendered by JS -->
+              </div>
+            </div>
+
+            <!-- Checked Items -->
+            <div class="bg-vault-surface border border-vault-border rounded-2xl p-5 opacity-75">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="text-sm font-semibold text-vault-text line-through">Checked Items</h3>
+                <span id="shop-checked-total" class="text-xs font-bold text-emerald-400">Total: ₱0.00</span>
+              </div>
+              <div id="shop-checked-list" class="space-y-2">
+                <!-- Rendered by JS -->
+              </div>
+              
+              <!-- Mobile only button -->
+              <button type="button" id="shop-log-expense-btn-mobile"
+                class="mt-4 md:hidden w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-pink-500 to-purple-500 text-white font-semibold text-sm rounded-xl hover:from-pink-400 hover:to-purple-400 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+                Log Checked as Expense
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
